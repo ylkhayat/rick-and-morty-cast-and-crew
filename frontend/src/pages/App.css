@@ -1,0 +1,40 @@
+
+@font-face {
+  font-family: 'Spiegel-Regular';
+  src: url('/fonts/Spiegel-OTF/Spiegel-Regular.otf');
+}
+
+@font-face {
+  font-family: 'Spiegel-Bold';
+  src: url('/fonts/Spiegel-OTF/Spiegel-Bold.otf');
+}
+
+@font-face {
+  font-family: 'Spiegel-SemiBold';
+  src: url('/fonts/Spiegel-OTF/Spiegel-SemiBold.otf');
+}
+
+html, body, #root, .ant-app {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.app-container {
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-sub-container {
+  width: 80vw;
+  max-height: 80vh;
+  min-height: 80vh;
+  border-radius: 10px;
+  overflow-y: auto;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}

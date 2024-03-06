@@ -1,0 +1,19 @@
+.app-header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    gap: 10px;
+    width: 400px;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-header-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.app-header-greeting {
+    margin-bottom: 0 !important;
+}
