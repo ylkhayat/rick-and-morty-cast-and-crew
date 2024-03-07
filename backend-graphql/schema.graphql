@@ -2,65 +2,65 @@
 ### Do not make changes to this file directly
 
 
+type Bookmark {
+  character: Character
+  createdAt: DateTime!
+  id: Int!
+  updatedAt: DateTime!
+  user: User
+}
+
+type Character {
+  bookmarks: [Bookmark]
+  gender: String
+  id: Int!
+  image: String
+  location: Location
+  name: String
+  origin: Origin
+  species: String
+  status: String
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
 
-type Mutation {
-  createDraft(authorEmail: String!, data: PostCreateInput!): Post
-  deletePost(id: Int!): Post
-  incrementPostViewCount(id: Int!): Post
-  signupUser(data: UserCreateInput!): User!
-  togglePublishPost(id: Int!): Post
-}
-
-type Post {
-  author: User
-  content: String
-  createdAt: DateTime!
+type Location {
+  dimension: String
   id: Int!
-  published: Boolean!
-  title: String!
-  updatedAt: DateTime!
-  viewCount: Int!
+  name: String
+  type: String
 }
 
-input PostCreateInput {
-  content: String
-  title: String!
+type LoginResponse {
+  sessionId: String!
+  user: User!
 }
 
-input PostOrderByUpdatedAtInput {
-  updatedAt: SortOrder!
+type Mutation {
+  bookmarkCharacter(characterId: Int!): Bookmark!
+  loginOrSignup(data: UserInput!): LoginResponse!
+}
+
+type Origin {
+  id: Int!
+  name: String
 }
 
 type Query {
-  allUsers: [User!]!
-  draftsByUser(userUniqueInput: UserUniqueInput!): [Post]
-  feed(orderBy: PostOrderByUpdatedAtInput, searchString: String, skip: Int, take: Int): [Post!]!
-  postById(id: Int): Post
-}
-
-enum SortOrder {
-  asc
-  desc
+  bookmarks: [Bookmark!]!
+  characters: [Character]
 }
 
 type User {
-  email: String!
+  bookmarks: [Bookmark]
   id: Int!
-  name: String
-  posts: [Post!]!
+  username: String!
 }
 
-input UserCreateInput {
-  email: String!
-  name: String
-  posts: [PostCreateInput!]
-}
-
-input UserUniqueInput {
-  email: String
+input UserInput {
   id: Int
+  username: String
 }

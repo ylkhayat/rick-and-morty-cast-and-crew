@@ -3,283 +3,284 @@ const {
   makeSchema,
   nonNull,
   objectType,
-  stringArg,
   inputObjectType,
   arg,
   asNexusMethod,
-  enumType,
 } = require('nexus')
 const { DateTimeResolver } = require('graphql-scalars')
+const { ApolloClient, InMemoryCache, gql } = require('@apollo/client/core')
+
+const client = new ApolloClient({
+  uri: 'https://rickandmortyapi.com/graphql',
+  cache: new InMemoryCache(),
+})
 
 const DateTime = asNexusMethod(DateTimeResolver, 'date')
+const User = objectType({
+  name: 'User',
+  definition(t) {
+    t.nonNull.int('id')
+    t.nonNull.string('username')
+    t.list.field('bookmarks', {
+      type: 'Bookmark',
+      resolve: (parent, _, context) => {
+        return context.prisma.user
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .bookmarks()
+      },
+    })
+  },
+})
+
+const Bookmark = objectType({
+  name: 'Bookmark',
+  definition(t) {
+    t.nonNull.int('id')
+    t.nonNull.field('createdAt', { type: 'DateTime' })
+    t.nonNull.field('updatedAt', { type: 'DateTime' })
+    t.field('user', {
+      type: 'User',
+      resolve: (parent, _, context) => {
+        return context.prisma.bookmark
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .user()
+      },
+    })
+    t.field('character', {
+      type: 'Character',
+      resolve: (parent, _, context) => {
+        return context.prisma.bookmark
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .character()
+      },
+    })
+  },
+})
+
+const Origin = objectType({
+  name: 'Origin',
+  definition(t) {
+    t.nonNull.int('id')
+    t.string('name')
+  },
+})
+
+const Location = objectType({
+  name: 'Location',
+  definition(t) {
+    t.nonNull.int('id')
+    t.string('name')
+    t.string('type')
+    t.string('dimension')
+  },
+})
+
+const Character = objectType({
+  name: 'Character',
+  definition(t) {
+    t.nonNull.int('id')
+    t.string('image')
+    t.string('name')
+    t.string('species')
+    t.string('gender')
+    t.field('origin', {
+      type: 'Origin',
+      resolve: (parent, _, context) => {
+        return context.prisma.character
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .origin()
+      },
+    })
+    t.field('location', {
+      type: 'Location',
+      resolve: (parent, _, context) => {
+        return context.prisma.character
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .location()
+      },
+    })
+    t.string('status')
+    t.list.field('bookmarks', {
+      type: 'Bookmark',
+      resolve: (parent, _, context) => {
+        return context.prisma.character
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .bookmarks()
+      },
+    })
+  },
+})
 
 const Query = objectType({
   name: 'Query',
   definition(t) {
-    t.nonNull.list.nonNull.field('allUsers', {
-      type: 'User',
-      resolve: (_parent, _args, context) => {
-        return context.prisma.user.findMany()
+    t.nonNull.list.nonNull.field('bookmarks', {
+      type: 'Bookmark',
+      resolve: (_parent, args, context) => {
+        return context.prisma.bookmark.findMany()
       },
     })
 
-    t.nullable.field('postById', {
-      type: 'Post',
-      args: {
-        id: intArg(),
-      },
-      resolve: (_parent, args, context) => {
-        return context.prisma.post.findUnique({
-          where: { id: args.id || undefined },
-        })
-      },
-    })
-
-    t.nonNull.list.nonNull.field('feed', {
-      type: 'Post',
-      args: {
-        searchString: stringArg(),
-        skip: intArg(),
-        take: intArg(),
-        orderBy: arg({
-          type: 'PostOrderByUpdatedAtInput',
-        }),
-      },
-      resolve: (_parent, args, context) => {
-        const or = args.searchString
-          ? {
-              OR: [
-                { title: { contains: args.searchString } },
-                { content: { contains: args.searchString } },
-              ],
-            }
-          : {}
-
-        return context.prisma.post.findMany({
-          where: {
-            published: true,
-            ...or,
+    t.list.field('characters', {
+      type: 'Character',
+      resolve: async (_, __, context) => {
+        // Try to find characters in the database
+        let characters = await context.prisma.character.findMany({
+          include: {
+            origin: true,
+            location: true,
           },
-          take: args.take || undefined,
-          skip: args.skip || undefined,
-          orderBy: args.orderBy || undefined,
         })
-      },
-    })
 
-    t.list.field('draftsByUser', {
-      type: 'Post',
-      args: {
-        userUniqueInput: nonNull(
-          arg({
-            type: 'UserUniqueInput',
-          }),
-        ),
-      },
-      resolve: (_parent, args, context) => {
-        return context.prisma.user
-          .findUnique({
-            where: {
-              id: args.userUniqueInput.id || undefined,
-              email: args.userUniqueInput.email || undefined,
+        // If less characters than per page are found, fetch from the API
+        if (characters.length < 20) {
+          const { data } = await client.query({
+            query: gql`
+              query {
+                characters(page: 1) {
+                  results {
+                    id
+                    name
+                    status
+                    species
+                    gender
+                    origin {
+                      name
+                    }
+                    location {
+                      dimension
+                    }
+                    image
+                  }
+                }
+              }
+            `,
+          })
+
+          console.log(data.characters.results)
+
+          // Map the results to match the Character model in the database
+          const newCharacters = data.characters.results.map((character) => ({
+            id: parseInt(character.id),
+            name: character.name,
+            status: character.status,
+            species: character.species,
+            gender: character.gender,
+            origin: {
+              create: {
+                name: character.origin.name,
+              },
+            },
+            location: {
+              create: {
+                dimension: character.location.dimension || 'unknown',
+              },
+            },
+            image: character.image,
+          }))
+
+          for (const character of newCharacters) {
+            await context.prisma.character.upsert({
+              where: { id: parseInt(character.id) },
+              update: character,
+              create: character,
+            })
+          }
+
+          characters = await context.prisma.character.findMany({
+            include: {
+              origin: true,
+              location: true,
             },
           })
-          .posts({
-            where: {
-              published: false,
-            },
-          })
+        }
+
+        return characters
       },
     })
+  },
+})
+
+const UserInput = inputObjectType({
+  name: 'UserInput',
+  definition(t) {
+    t.int('id')
+    t.string('username')
+  },
+})
+
+const LoginResponse = objectType({
+  name: 'LoginResponse',
+  definition(t) {
+    t.nonNull.field('user', { type: 'User' })
+    t.nonNull.string('sessionId')
   },
 })
 
 const Mutation = objectType({
   name: 'Mutation',
   definition(t) {
-    t.nonNull.field('signupUser', {
-      type: 'User',
+    t.nonNull.field('loginOrSignup', {
+      type: 'LoginResponse',
       args: {
         data: nonNull(
           arg({
-            type: 'UserCreateInput',
+            type: 'UserInput',
           }),
         ),
-      },
-      resolve: (_, args, context) => {
-        const postData = args.data.posts
-          ? args.data.posts.map((post) => {
-              return { title: post.title, content: post.content || undefined }
-            })
-          : []
-        return context.prisma.user.create({
-          data: {
-            name: args.data.name,
-            email: args.data.email,
-            posts: {
-              create: postData,
-            },
-          },
-        })
-      },
-    })
-
-    t.field('createDraft', {
-      type: 'Post',
-      args: {
-        data: nonNull(
-          arg({
-            type: 'PostCreateInput',
-          }),
-        ),
-        authorEmail: nonNull(stringArg()),
-      },
-      resolve: (_, args, context) => {
-        return context.prisma.post.create({
-          data: {
-            title: args.data.title,
-            content: args.data.content,
-            author: {
-              connect: { email: args.authorEmail },
-            },
-          },
-        })
-      },
-    })
-
-    t.field('togglePublishPost', {
-      type: 'Post',
-      args: {
-        id: nonNull(intArg()),
       },
       resolve: async (_, args, context) => {
-        const post = await context.prisma.post.findUnique({
-          where: { id: args.id || undefined },
-          select: {
-            published: true,
-          },
+        const user = await context.prisma.user.upsert({
+          where: { username: args.data.username },
+          update: {},
+          create: { username: args.data.username },
         })
 
-        if (!post) {
-          throw new Error(
-            `Post with ID ${args.id} does not exist in the database.`,
-          )
+        const sessionId = args.data.username
+
+        return {
+          user: user,
+          sessionId: sessionId,
         }
-
-        return context.prisma.post.update({
-          where: { id: args.id || undefined },
-          data: { published: !post.published },
-        })
       },
     })
 
-    t.field('incrementPostViewCount', {
-      type: 'Post',
+    t.nonNull.field('bookmarkCharacter', {
+      type: 'Bookmark',
       args: {
-        id: nonNull(intArg()),
+        characterId: nonNull(intArg()),
       },
       resolve: (_, args, context) => {
-        return context.prisma.post.update({
-          where: { id: args.id || undefined },
+        // Check if the user is authenticated
+        if (!context.user) {
+          throw new Error('You must be authenticated to bookmark a character')
+        }
+
+        // Create a new bookmark
+        return context.prisma.bookmark.create({
           data: {
-            viewCount: {
-              increment: 1,
+            User: {
+              connect: { id: args.user.id },
+            },
+            Character: {
+              connect: { id: args.characterId },
             },
           },
         })
       },
     })
-
-    t.field('deletePost', {
-      type: 'Post',
-      args: {
-        id: nonNull(intArg()),
-      },
-      resolve: (_, args, context) => {
-        return context.prisma.post.delete({
-          where: { id: args.id },
-        })
-      },
-    })
-  },
-})
-
-const User = objectType({
-  name: 'User',
-  definition(t) {
-    t.nonNull.int('id')
-    t.string('name')
-    t.nonNull.string('email')
-    t.nonNull.list.nonNull.field('posts', {
-      type: 'Post',
-      resolve: (parent, _, context) => {
-        return context.prisma.user
-          .findUnique({
-            where: { id: parent.id || undefined },
-          })
-          .posts()
-      },
-    })
-  },
-})
-
-const Post = objectType({
-  name: 'Post',
-  definition(t) {
-    t.nonNull.int('id')
-    t.nonNull.field('createdAt', { type: 'DateTime' })
-    t.nonNull.field('updatedAt', { type: 'DateTime' })
-    t.nonNull.string('title')
-    t.string('content')
-    t.nonNull.boolean('published')
-    t.nonNull.int('viewCount')
-    t.field('author', {
-      type: 'User',
-      resolve: (parent, _, context) => {
-        return context.prisma.post
-          .findUnique({
-            where: { id: parent.id || undefined },
-          })
-          .author()
-      },
-    })
-  },
-})
-
-const SortOrder = enumType({
-  name: 'SortOrder',
-  members: ['asc', 'desc'],
-})
-
-const PostOrderByUpdatedAtInput = inputObjectType({
-  name: 'PostOrderByUpdatedAtInput',
-  definition(t) {
-    t.nonNull.field('updatedAt', { type: 'SortOrder' })
-  },
-})
-
-const UserUniqueInput = inputObjectType({
-  name: 'UserUniqueInput',
-  definition(t) {
-    t.int('id')
-    t.string('email')
-  },
-})
-
-const PostCreateInput = inputObjectType({
-  name: 'PostCreateInput',
-  definition(t) {
-    t.nonNull.string('title')
-    t.string('content')
-  },
-})
-
-const UserCreateInput = inputObjectType({
-  name: 'UserCreateInput',
-  definition(t) {
-    t.nonNull.string('email')
-    t.string('name')
-    t.list.nonNull.field('posts', { type: 'PostCreateInput' })
   },
 })
 
@@ -287,13 +288,13 @@ const schema = makeSchema({
   types: [
     Query,
     Mutation,
-    Post,
     User,
-    UserUniqueInput,
-    UserCreateInput,
-    PostCreateInput,
-    SortOrder,
-    PostOrderByUpdatedAtInput,
+    LoginResponse,
+    UserInput,
+    Bookmark,
+    Character,
+    Origin,
+    Location,
     DateTime,
   ],
   outputs: {
