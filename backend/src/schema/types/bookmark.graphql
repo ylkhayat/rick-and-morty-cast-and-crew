@@ -1,7 +1,0 @@
-type Bookmark {
-  id: ID!
-  url: String!
-  description: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}

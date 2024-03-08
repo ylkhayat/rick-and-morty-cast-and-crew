@@ -298,7 +298,7 @@ const schema = makeSchema({
     DateTime,
   ],
   outputs: {
-    schema: __dirname + '/../schema.graphql',
+    schema: __dirname + '/../../schema.graphql',
     typegen: __dirname + '/generated/nexus.ts',
   },
   sourceTypes: {
