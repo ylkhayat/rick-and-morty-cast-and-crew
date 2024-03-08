@@ -12,14 +12,21 @@ services:
       - '5432:5432'
   backend:
     build: backend
+    volumes:
+      - ./backend:/srv/backend
     ports:
       - "4000:4000"
     depends_on:
       - db
+    environment:
+      - DATABASE_URL=postgresql://db_user:db_password@db:5432/prisma
+
   frontend:
     build: frontend
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/srv/frontend
 
 volumes:
   postgres:

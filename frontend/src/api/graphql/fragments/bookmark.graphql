@@ -1,0 +1,6 @@
+fragment bookmark on Bookmark {
+  id
+  character {
+    ...character
+  }
+}

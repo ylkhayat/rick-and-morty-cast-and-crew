@@ -1,0 +1,11 @@
+query bookmarks {
+  bookmarks {
+    id
+    user {
+      ...user
+    }
+    character {
+      ...character
+    }
+  }
+}

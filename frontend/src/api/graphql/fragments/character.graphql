@@ -1,0 +1,14 @@
+fragment character on Character {
+  gender
+  id
+  image
+  location {
+    dimension
+  }
+  name
+  origin {
+    name
+  }
+  species
+  status
+}

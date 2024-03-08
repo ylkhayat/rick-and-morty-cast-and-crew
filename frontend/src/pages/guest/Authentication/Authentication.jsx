@@ -6,12 +6,22 @@ import './Authentication.css';
 import { Space, Form, Input, Button } from 'antd';
 import { LoginOutlined } from '@ant-design/icons';
 import { useSliderContext } from '../../Slider/Slide';
+import { useLoginOrSignupMutation } from '../../../api/generated';
 
 export const Authentication = () => {
   const [isFocused, setIsFocused] = useState(false);
   const { navigate } = useSliderContext();
-  const onFinish = ({ username }) => {
-    window.sessionStorage.setItem('sessionId', username);
+  const [loginOrSignup, { loading }] = useLoginOrSignupMutation();
+
+  const onFinish = async ({ username }) => {
+    const { data } = await loginOrSignup({
+      variables: {
+        data: {
+          username,
+        },
+      },
+    });
+    window.sessionStorage.setItem('sessionId', data.loginOrSignup.sessionId);
     navigate('right', 'list');
   };
 
@@ -45,7 +55,7 @@ export const Authentication = () => {
           />
         </Form.Item>
 
-        <Button htmlType="submit" className="submit-button">
+        <Button htmlType="submit" className="submit-button" loading={loading}>
           <LoginOutlined />
         </Button>
       </Form>

@@ -1,0 +1,11 @@
+mutation loginOrSignup($data: UserInput!) {
+  loginOrSignup(data: $data) {
+    sessionId
+    user {
+      ...user
+      bookmarks {
+        id
+      }
+    }
+  }
+}

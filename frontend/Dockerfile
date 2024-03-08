@@ -1,7 +1,6 @@
 FROM node:18-slim
 
-# Create and change to the app directory.
-WORKDIR /usr/src/app
+WORKDIR /srv/frontend
 
 # Copy application dependency manifests to the container image.
 # A wildcard is used to ensure both package.json AND yarn.lock are copied.

@@ -5,12 +5,10 @@ const { createContext } = require('./context')
 
 const start = async () => {
   const server = new ApolloServer({ schema })
-
   const { url } = await startStandaloneServer(server, {
     context: createContext,
     listen: { port: 4000 },
   })
-
   console.log(`🚀 Server ready at: ${url}`)
 }
 

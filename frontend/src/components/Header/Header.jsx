@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { LogoutOutlined } from '@ant-design/icons';
 
 export const Header = () => {
+  const sessionId = window.sessionStorage.getItem('sessionId');
   const {
     token: { colorBgBase, red5 },
   } = theme.useToken();
@@ -38,7 +39,9 @@ export const Header = () => {
               background: colorBgBase,
             }}
           >
-            <Paragraph className="app-header-greeting">Hey, Youssef!</Paragraph>
+            <Paragraph className="app-header-greeting">
+              Hey, {sessionId}!
+            </Paragraph>
             <Button
               onClick={onLogout}
               icon={<LogoutOutlined />}

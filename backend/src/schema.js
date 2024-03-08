@@ -89,35 +89,31 @@ const Character = objectType({
     t.string('name')
     t.string('species')
     t.string('gender')
-    t.field('origin', {
-      type: 'Origin',
-      resolve: (parent, _, context) => {
-        return context.prisma.character
-          .findUnique({
-            where: { id: parent.id || undefined },
-          })
-          .origin()
-      },
-    })
+    t.string('status')
+
     t.field('location', {
       type: 'Location',
       resolve: (parent, _, context) => {
-        return context.prisma.character
-          .findUnique({
-            where: { id: parent.id || undefined },
-          })
-          .location()
+        return context.prisma.location.findUnique({
+          where: { id: parent.locationId },
+        })
       },
     })
-    t.string('status')
+
     t.list.field('bookmarks', {
       type: 'Bookmark',
       resolve: (parent, _, context) => {
-        return context.prisma.character
-          .findUnique({
-            where: { id: parent.id || undefined },
-          })
-          .bookmarks()
+        return context.prisma.bookmark.findMany({
+          where: { characterId: parent.id },
+        })
+      },
+    })
+    t.field('origin', {
+      type: 'Origin',
+      resolve: (parent, _, context) => {
+        return context.prisma.origin.findUnique({
+          where: { id: parent.originId },
+        })
       },
     })
   },
@@ -128,7 +124,7 @@ const Query = objectType({
   definition(t) {
     t.nonNull.list.nonNull.field('bookmarks', {
       type: 'Bookmark',
-      resolve: (_parent, args, context) => {
+      resolve: (_, __, context) => {
         return context.prisma.bookmark.findMany()
       },
     })
@@ -168,8 +164,6 @@ const Query = objectType({
               }
             `,
           })
-
-          console.log(data.characters.results)
 
           // Map the results to match the Character model in the database
           const newCharacters = data.characters.results.map((character) => ({
@@ -288,17 +282,17 @@ const schema = makeSchema({
   types: [
     Query,
     Mutation,
+    Character,
     User,
     LoginResponse,
     UserInput,
     Bookmark,
-    Character,
     Origin,
     Location,
     DateTime,
   ],
   outputs: {
-    schema: __dirname + '/../../schema.graphql',
+    schema: __dirname + '/../../frontend/schema.graphql',
     typegen: __dirname + '/generated/nexus.ts',
   },
   sourceTypes: {
