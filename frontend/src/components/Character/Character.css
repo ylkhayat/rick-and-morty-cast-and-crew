@@ -1,0 +1,158 @@
+.character-container {
+  width: 100%;
+  height: 200px;
+  border: 1px solid white;
+  overflow: hidden;
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+
+  .character-image-container {
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .character-name-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .character-name {
+    font-size: larger;
+    font-weight: 900;
+    align-self: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transform: scaleY(1.5);
+    margin: 0;
+  }
+
+  .character-bookmark {
+    color: white;
+  }
+
+  .character-gender {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  .character-image-container {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .character-image {
+    height: 100%;
+    aspect-ratio: 1;
+    transform: scale(1);
+    transition: transform 0.3s ease-in-out;
+    object-fit: cover;
+    object-position: -25px;
+  }
+
+  .character-status {
+    border-radius: 5px;
+    padding: 3px 6px;
+    width: fit-content;
+    border-style: solid;
+    border-width: 1px;
+    opacity: 1;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .character-status-floating {
+    opacity: 0;
+    bottom: -40px;
+    transition:
+      opacity 0.2s ease-in-out,
+      bottom 0.2s ease-in-out;
+  }
+
+  &:hover {
+    .character-image {
+      transform: scale(1.1);
+    }
+
+    .character-status {
+      opacity: 0;
+    }
+
+    .character-gender {
+      transform: rotate(720deg);
+    }
+
+    .character-status-floating {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      opacity: 1;
+      margin: 0;
+      align-self: center;
+      text-align: center;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px); /* Add this line */
+      letter-spacing: 2px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    transform: scale(1.02);
+  }
+}
+
+.character-info-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  > p {
+    margin: 0;
+  }
+}
+
+.character-rest-info-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+
+  > p {
+    margin: 0;
+    text-align: start;
+  }
+}
+
+.character-bookmark-container {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+
+  transition: transform 0.3s ease-in-out;
+  &:hover {
+    transform: scale(1.3);
+  }
+}
+
+.character-bookmark-fill {
+  position: absolute;
+}

@@ -30,17 +30,15 @@ export const Authentication = () => {
       <Form onFinish={onFinish} className="authentication-form">
         <Form.Item
           name="username"
-          rules={
-            [
-              // {
-              //   required: true,
-              // },
-              // {
-              //   min: 5,
-              //   message: 'must be at least 5 characters long!',
-              // },
-            ]
-          }
+          rules={[
+            {
+              required: true,
+            },
+            {
+              min: 5,
+              message: 'must be at least 5 characters long!',
+            },
+          ]}
           required
         >
           <Input

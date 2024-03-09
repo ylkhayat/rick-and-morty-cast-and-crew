@@ -1,19 +1,31 @@
-.app-header {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    gap: 10px;
-    width: 400px;
-    justify-content: center;
-    align-items: center;
+.app-header-container {
+
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 0;
 }
 
-.app-header-container {
-    position: absolute;
-    top: 0;
-    right: 0;
+.app-header {
+  display: flex;
+  margin: 0 auto;
+  align-items: flex-end;
+  align-self: center;
+  width: 85%;
+  justify-content: center;
+  flex-direction: column;
 }
+
+
+.app-header-greeting-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    flex-direction: column;
+
+}
+
 .app-header-greeting {
-    margin-bottom: 0 !important;
+  margin-bottom: 0 !important;
 }
+

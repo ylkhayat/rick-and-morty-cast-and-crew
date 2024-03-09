@@ -26,33 +26,35 @@ export const Header = () => {
 
   return (
     <AnimatePresence>
-      {slideKey === 'list' && (
-        <motion.div
-          className="app-header-container"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
+      <div className="app-header-container">
+        <LayoutHeader
+          className="app-header"
+          style={{
+            background: colorBgBase,
+          }}
         >
-          <LayoutHeader
-            className="app-header"
-            style={{
-              background: colorBgBase,
-            }}
-          >
-            <Paragraph className="app-header-greeting">
-              Hey, {sessionId}!
-            </Paragraph>
-            <Button
-              onClick={onLogout}
-              icon={<LogoutOutlined />}
-              style={{
-                color: red5,
-                borderColor: red5,
-              }}
-            ></Button>
-          </LayoutHeader>
-        </motion.div>
-      )}
+          {slideKey === 'list' && (
+            <motion.div
+              className="app-header-greeting-container"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              <Paragraph className="app-header-greeting">
+                What's Good! {sessionId}!
+              </Paragraph>
+              <Button
+                onClick={onLogout}
+                icon={<LogoutOutlined />}
+                style={{
+                  color: red5,
+                  borderColor: red5,
+                }}
+              />
+            </motion.div>
+          )}
+        </LayoutHeader>
+      </div>
     </AnimatePresence>
   );
 };

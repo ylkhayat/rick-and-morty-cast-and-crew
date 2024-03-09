@@ -3,9 +3,22 @@ const cron = require('node-cron')
 
 const prisma = new PrismaClient()
 
-const createContext = async () => ({
-  prisma: prisma,
-})
+const createContext = async ({ req }) => {
+  let username = req.headers.authorization || ''
+
+  // remove the "Bearer " prefix
+  if (username.startsWith('Bearer ')) {
+    username = username.slice(7)
+  }
+  // retrieve a user with the username
+  const user = await prisma.user.findUnique({
+    where: {
+      username: username,
+    },
+  })
+
+  return { user, prisma }
+}
 
 async function deleteOldBookmarks() {
   const oneDayAgo = new Date()
