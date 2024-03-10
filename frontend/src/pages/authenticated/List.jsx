@@ -5,17 +5,27 @@ import {
   useUnbookmarkCharacterMutation,
 } from '../../api/generated';
 import './List.css';
-import React, { createContext, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Character } from '../../components/Character/Character';
-import { App as AntdApp, Spin } from 'antd';
+import { Pagination, App as AntdApp, Spin } from 'antd';
 import FlipMove from 'react-flip-move';
-import { HighlightedCharacterProvider } from './HighlightedCharacter';
+import { HighlightedCharacterProvider } from '../../providers/HighlightedCharacterContext';
 
 export const List = () => {
-  const [highlightedCharacter, setHighlightedCharacter] = useState(null);
   const { data: bookmarksData } = useBookmarksQuery();
   const { message } = AntdApp.useApp();
-  const { data: results, loading } = useCharactersQuery();
+  const [page, setPage] = useState(1);
+
+  const { data: results } = useCharactersQuery({
+    variables: {
+      page,
+    },
+    onCompleted: () => {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    },
+  });
   const [bookmarkCharacter] = useBookmarkCharacterMutation({
     refetchQueries: ['bookmarks'],
     onCompleted: ({
@@ -26,6 +36,7 @@ export const List = () => {
       message.success(`${name.split(' ')[0]} is now favorited!`);
     },
   });
+
   const [unbookmarkCharacter] = useUnbookmarkCharacterMutation({
     refetchQueries: ['bookmarks'],
     onCompleted: ({
@@ -36,6 +47,8 @@ export const List = () => {
       message.info(`${name.split(' ')[0]} is no longer a favorite of yours!`);
     },
   });
+
+  const [loading, setLoading] = useState(true);
 
   const charactersWithBookmarks = useMemo(() => {
     return results?.characters.map((character) => {
@@ -51,26 +64,34 @@ export const List = () => {
 
   return (
     <HighlightedCharacterProvider>
-      <div className="list-container">
-        {loading ? (
-          <Spin size="large" />
-        ) : (
-          <FlipMove className="list-sub-container">
-            {charactersWithBookmarks
-              ?.sort((a, b) => b.isBookmarked - a.isBookmarked)
-              .map((character) => {
-                return (
-                  <Character
-                    character={character}
-                    isBookmarked={character.isBookmarked}
-                    bookmarkCharacter={bookmarkCharacter}
-                    unbookmarkCharacter={unbookmarkCharacter}
-                    key={character.id}
-                  />
-                );
-              })}
-          </FlipMove>
-        )}
+      <div className="list-pagination-container">
+        <div className="list-container">
+          {loading ? (
+            <Spin size="large" />
+          ) : (
+            <FlipMove className="list-sub-container">
+              {charactersWithBookmarks
+                ?.sort((a, b) => b.isBookmarked - a.isBookmarked)
+                .map((character) => {
+                  return (
+                    <Character
+                      character={character}
+                      isBookmarked={character.isBookmarked}
+                      bookmarkCharacter={bookmarkCharacter}
+                      unbookmarkCharacter={unbookmarkCharacter}
+                      key={character.id}
+                    />
+                  );
+                })}
+            </FlipMove>
+          )}
+        </div>
+        <Pagination
+          defaultCurrent={1}
+          pageSize={20}
+          total={826}
+          onChange={(newPage) => setPage(newPage)}
+        />
       </div>
     </HighlightedCharacterProvider>
   );

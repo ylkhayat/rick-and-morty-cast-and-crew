@@ -1,5 +1,5 @@
 const { ApolloClient, InMemoryCache, gql } = require('@apollo/client/core')
-const { objectType } = require('nexus')
+const { objectType, intArg } = require('nexus')
 
 const client = new ApolloClient({
   uri: 'https://rickandmortyapi.com/graphql',
@@ -41,14 +41,30 @@ const Query = objectType({
 
     t.list.field('characters', {
       type: 'Character',
-      resolve: async (_, __, context) => {
-        let characters = await context.prisma.character.findMany()
+      args: {
+        page: intArg({ default: 1 }),
+      },
+      resolve: async (_, { page }, context) => {
+        const perPage = 20
+        const minId = (page - 1) * perPage + 1
+        const maxId = page * perPage
+        let characters = await context.prisma.character.findMany({
+          where: {
+            id: {
+              gte: minId,
+              lte: maxId,
+            },
+          },
+          include: {
+            episodes: true,
+          },
+        })
 
-        if (true) {
+        if (characters.length < 20) {
           const { data: charactersData } = await client.query({
             query: gql`
               query {
-                characters(page: 1) {
+                characters(page: ${page}) {
                   results {
                     id
                     name
@@ -122,7 +138,17 @@ const Query = objectType({
               })
             }
           }
-          characters = await context.prisma.character.findMany()
+          characters = await context.prisma.character.findMany({
+            where: {
+              id: {
+                gte: minId,
+                lte: maxId,
+              },
+            },
+            include: {
+              episodes: true,
+            },
+          })
         }
         return characters
       },

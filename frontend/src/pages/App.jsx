@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 
 import Provider from '../api/Provider';
 
@@ -11,8 +11,9 @@ import { Header } from '../components/Header/Header';
 import { Landing } from './guest/Landing/Landing';
 import { Authentication } from './guest/Authentication/Authentication';
 import { List } from './authenticated/List';
+import { AppProvider, useAppContext } from '../providers/AppContext';
 
-const AppInternal = () => {
+const AppInternalInternal = () => {
   const { message } = AntdApp.useApp();
   const {
     token: { colorBgContainer },
@@ -55,7 +56,11 @@ const AppInternal = () => {
     <Layout className="app-container">
       <Header />
       <Content
-        className="app-sub-container"
+        className={
+          state.slideKey === 'authentication'
+            ? 'app-sub-auth-container'
+            : 'app-sub-list-container'
+        }
         style={{
           background: colorBgContainer,
         }}
@@ -66,9 +71,9 @@ const AppInternal = () => {
   );
 };
 
-const App = () => {
+const AppInternal = () => {
   const { defaultAlgorithm, darkAlgorithm } = theme;
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isDarkMode } = useAppContext();
 
   return (
     <Provider>
@@ -82,12 +87,18 @@ const App = () => {
       >
         <AntdApp>
           <SliderProvider slideKey="landing">
-            <AppInternal />
+            <AppInternalInternal />
           </SliderProvider>
         </AntdApp>
       </ConfigProvider>
     </Provider>
   );
 };
+
+const App = () => (
+  <AppProvider>
+    <AppInternal />
+  </AppProvider>
+);
 
 export default App;

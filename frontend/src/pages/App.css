@@ -1,4 +1,3 @@
-
 @font-face {
   font-family: 'Spiegel-Regular';
   src: url('/fonts/Spiegel-OTF/Spiegel-Regular.otf');
@@ -14,7 +13,10 @@
   src: url('/fonts/Spiegel-OTF/Spiegel-SemiBold.otf');
 }
 
-html, body, #root, .ant-app {
+html,
+body,
+#root,
+.ant-app {
   margin: 0;
   height: 100%;
   width: 100%;
@@ -26,7 +28,23 @@ html, body, #root, .ant-app {
   justify-content: center;
 }
 
-.app-sub-container {
+.app-sub-auth-container {
+  transition: all 0.2s;
+  width: 50vw;
+  max-height: 50vh;
+  min-height: 50vh;
+  border-radius: 10px;
+  overflow-y: auto;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.app-sub-list-container {
+  transition: all 0.2s;
+
   width: 80vw;
   max-height: 80vh;
   min-height: 80vh;

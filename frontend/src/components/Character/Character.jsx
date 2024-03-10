@@ -17,7 +17,7 @@ import {
   SliderProvider,
   useSliderContext,
 } from '../../pages/Slider/Slide';
-import { useHighlightedCharacterContext } from '../../pages/authenticated/HighlightedCharacter';
+import { useHighlightedCharacterContext } from '../../providers/HighlightedCharacterContext';
 
 const { Paragraph } = Typography;
 

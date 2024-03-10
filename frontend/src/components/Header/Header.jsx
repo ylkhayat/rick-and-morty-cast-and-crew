@@ -1,6 +1,13 @@
 import React from 'react';
 
-import { Button, Layout, theme, Typography } from 'antd';
+import {
+  ConfigProvider,
+  Switch,
+  Button,
+  Layout,
+  theme,
+  Typography,
+} from 'antd';
 const { Header: LayoutHeader } = Layout;
 const { Paragraph } = Typography;
 
@@ -9,8 +16,10 @@ import { useSliderContext } from '../../pages/Slider/Slide';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LogoutOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/client';
+import { useAppContext } from '../../providers/AppContext';
 
 export const Header = () => {
+  const { isDarkMode, setIsDarkMode } = useAppContext();
   const client = useApolloClient();
 
   const sessionId = window.sessionStorage.getItem('sessionId');
@@ -44,6 +53,15 @@ export const Header = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
             >
+              <div className="app-header-switch">
+                <p>Light</p>
+                <Switch
+                  onChange={(newIsDarkMode) => setIsDarkMode(newIsDarkMode)}
+                  checked={isDarkMode}
+                />
+                <p>Dark</p>
+              </div>
+
               <Paragraph className="app-header-greeting">
                 What's Good! {sessionId}!
               </Paragraph>

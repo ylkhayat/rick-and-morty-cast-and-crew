@@ -84,6 +84,11 @@ export type Query = {
   me?: Maybe<User>;
 };
 
+
+export type QueryCharactersArgs = {
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type User = {
   __typename?: 'User';
   bookmarks?: Maybe<Array<Maybe<Bookmark>>>;
@@ -96,7 +101,7 @@ export type UserInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type BookmarkFragment = { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null };
+export type BookmarkFragment = { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number } | null };
 
 export type CharacterFragment = { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null };
 
@@ -107,7 +112,7 @@ export type BookmarkCharacterMutationVariables = Exact<{
 }>;
 
 
-export type BookmarkCharacterMutation = { __typename?: 'Mutation', bookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null } };
+export type BookmarkCharacterMutation = { __typename?: 'Mutation', bookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number } | null } };
 
 export type LoginOrSignupMutationVariables = Exact<{
   data: UserInput;
@@ -121,14 +126,16 @@ export type UnbookmarkCharacterMutationVariables = Exact<{
 }>;
 
 
-export type UnbookmarkCharacterMutation = { __typename?: 'Mutation', unbookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null } };
+export type UnbookmarkCharacterMutation = { __typename?: 'Mutation', unbookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number } | null } };
 
 export type BookmarksQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type BookmarksQuery = { __typename?: 'Query', bookmarks: Array<{ __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null }> };
 
-export type CharactersQueryVariables = Exact<{ [key: string]: never; }>;
+export type CharactersQueryVariables = Exact<{
+  page?: InputMaybe<Scalars['Int']['input']>;
+}>;
 
 
 export type CharactersQuery = { __typename?: 'Query', characters?: Array<{ __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null> | null };
@@ -138,6 +145,14 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, username: string } | null };
 
+export const BookmarkFragmentDoc = gql`
+    fragment bookmark on Bookmark {
+  id
+  character {
+    id
+  }
+}
+    `;
 export const CharacterFragmentDoc = gql`
     fragment character on Character {
   gender
@@ -155,14 +170,6 @@ export const CharacterFragmentDoc = gql`
   }
 }
     `;
-export const BookmarkFragmentDoc = gql`
-    fragment bookmark on Bookmark {
-  id
-  character {
-    ...character
-  }
-}
-    ${CharacterFragmentDoc}`;
 export const UserFragmentDoc = gql`
     fragment user on User {
   id
@@ -317,8 +324,8 @@ export type BookmarksLazyQueryHookResult = ReturnType<typeof useBookmarksLazyQue
 export type BookmarksSuspenseQueryHookResult = ReturnType<typeof useBookmarksSuspenseQuery>;
 export type BookmarksQueryResult = Apollo.QueryResult<BookmarksQuery, BookmarksQueryVariables>;
 export const CharactersDocument = gql`
-    query characters {
-  characters {
+    query characters($page: Int) {
+  characters(page: $page) {
     ...character
   }
 }
@@ -336,6 +343,7 @@ export const CharactersDocument = gql`
  * @example
  * const { data, loading, error } = useCharactersQuery({
  *   variables: {
+ *      page: // value for 'page'
  *   },
  * });
  */
