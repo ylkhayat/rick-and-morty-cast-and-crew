@@ -25,13 +25,13 @@ export type Bookmark = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   updatedAt: Scalars['DateTime']['output'];
-  user?: Maybe<User>;
 };
 
 export type Character = {
   __typename?: 'Character';
   bookmarks?: Maybe<Array<Maybe<Bookmark>>>;
   dimension?: Maybe<Scalars['String']['output']>;
+  episodes?: Maybe<Array<Maybe<Episode>>>;
   gender?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   image?: Maybe<Scalars['String']['output']>;
@@ -39,6 +39,14 @@ export type Character = {
   origin?: Maybe<Scalars['String']['output']>;
   species?: Maybe<Scalars['String']['output']>;
   status?: Maybe<Scalars['String']['output']>;
+};
+
+export type Episode = {
+  __typename?: 'Episode';
+  airDate: Scalars['String']['output'];
+  episode: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type LoginResponse = {
@@ -88,9 +96,9 @@ export type UserInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type BookmarkFragment = { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null } | null };
+export type BookmarkFragment = { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null };
 
-export type CharacterFragment = { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null };
+export type CharacterFragment = { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null };
 
 export type UserFragment = { __typename?: 'User', id: number, username: string };
 
@@ -99,7 +107,7 @@ export type BookmarkCharacterMutationVariables = Exact<{
 }>;
 
 
-export type BookmarkCharacterMutation = { __typename?: 'Mutation', bookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null } | null } };
+export type BookmarkCharacterMutation = { __typename?: 'Mutation', bookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null } };
 
 export type LoginOrSignupMutationVariables = Exact<{
   data: UserInput;
@@ -113,17 +121,17 @@ export type UnbookmarkCharacterMutationVariables = Exact<{
 }>;
 
 
-export type UnbookmarkCharacterMutation = { __typename?: 'Mutation', unbookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null } | null } };
+export type UnbookmarkCharacterMutation = { __typename?: 'Mutation', unbookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null } };
 
 export type BookmarksQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type BookmarksQuery = { __typename?: 'Query', bookmarks: Array<{ __typename?: 'Bookmark', id: number, user?: { __typename?: 'User', id: number, username: string } | null, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null } | null }> };
+export type BookmarksQuery = { __typename?: 'Query', bookmarks: Array<{ __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null }> };
 
 export type CharactersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CharactersQuery = { __typename?: 'Query', characters?: Array<{ __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null } | null> | null };
+export type CharactersQuery = { __typename?: 'Query', characters?: Array<{ __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null> | null };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -140,6 +148,11 @@ export const CharacterFragmentDoc = gql`
   origin
   species
   status
+  episodes {
+    id
+    name
+    airDate
+  }
 }
     `;
 export const BookmarkFragmentDoc = gql`
@@ -265,16 +278,12 @@ export const BookmarksDocument = gql`
     query bookmarks {
   bookmarks {
     id
-    user {
-      ...user
-    }
     character {
       ...character
     }
   }
 }
-    ${UserFragmentDoc}
-${CharacterFragmentDoc}`;
+    ${CharacterFragmentDoc}`;
 
 /**
  * __useBookmarksQuery__

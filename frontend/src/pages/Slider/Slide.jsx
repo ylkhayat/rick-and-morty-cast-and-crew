@@ -1,10 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
 import './Slide.css';
-import React, { createContext, useContext, useMemo, useState } from 'react';
-import { Authentication } from '../guest/Authentication/Authentication';
-import { List } from '../authenticated/List';
-import { Landing } from '../guest/Landing/Landing';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 const variants = {
   enter: (direction) => {
@@ -41,42 +44,55 @@ const variants = {
   },
 };
 
-export const Slide = ({ children, slideKey, direction, ...props }) => (
-  <div {...props} className="container">
-    <AnimatePresence initial={false} mode="sync" custom={direction}>
-      <motion.div
-        key={slideKey}
-        className="slide"
-        variants={variants}
-        custom={direction}
-        initial="enter"
-        animate="center"
-        exit="exit"
-        transition={{
-          x: { type: 'spring', stiffness: 300, damping: 30 },
-          opacity: { duration: 0.2 },
-          height: { duration: 1 },
-        }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
-  </div>
-);
+export const Slide = ({ children, slideKey, ...props }) => {
+  const { state } = useSliderContext();
+  return (
+    <div {...props} className="container">
+      <AnimatePresence initial={false} mode="sync" custom={state.direction}>
+        <motion.div
+          key={slideKey}
+          className="slide"
+          variants={variants}
+          custom={state.direction}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            x: { type: 'spring', stiffness: 300, damping: 30 },
+            opacity: { duration: 0.2 },
+            height: { duration: 1 },
+          }}
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const SliderContext = createContext({
   state: {
     direction: 'down',
     slideKey: 'landing',
   },
-  navigate: (direction, slideKey) => {},
+  navigate: (direction, slideKey) => {
+    throw new Error('SliderContext: navigate function must be overridden');
+  },
 });
 
-export const SliderProvider = ({ children }) => {
+export const SliderProvider = ({ children, slideKey }) => {
   const [state, setState] = useState({
     direction: 'down',
-    slideKey: 'landing',
+    slideKey,
   });
+
+  useEffect(() => {
+    if (slideKey === 'info')
+      setState(() => ({
+        slideKey,
+        direction: 'up',
+      }));
+  }, [slideKey]);
   const navigate = (direction, slideKey) => setState({ direction, slideKey });
 
   return (
@@ -84,36 +100,6 @@ export const SliderProvider = ({ children }) => {
       {children}
     </SliderContext.Provider>
   );
-};
-
-export const Slides = () => {
-  const { state } = useSliderContext();
-  const content = useMemo(() => {
-    switch (state.slideKey) {
-      case 'landing':
-        return (
-          <Slide slideKey="landing" direction={state.direction}>
-            <Landing />
-          </Slide>
-        );
-      case 'authentication':
-        return (
-          <Slide slideKey="authentication" direction={state.direction}>
-            <Authentication />
-          </Slide>
-        );
-      case 'list':
-        return (
-          <Slide slideKey="list" direction={state.direction}>
-            <List />
-          </Slide>
-        );
-      default:
-        return <Authentication />;
-    }
-  }, [state.slideKey]);
-
-  return content;
 };
 
 export const useSliderContext = () => useContext(SliderContext);

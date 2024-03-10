@@ -10,6 +10,7 @@ const { Bookmark } = require('./definitions/bookmark')
 const { Character } = require('./definitions/character')
 const { Mutation } = require('./definitions/mutation')
 const { Query } = require('./definitions/query')
+const { Episode } = require('./definitions/episode')
 
 const DateTime = asNexusMethod(DateTimeResolver, 'date')
 
@@ -38,6 +39,7 @@ const schema = makeSchema({
     LoginResponse,
     UserInput,
     Bookmark,
+    Episode,
     DateTime,
   ],
   outputs: {

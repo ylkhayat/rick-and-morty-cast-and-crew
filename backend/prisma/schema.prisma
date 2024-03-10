@@ -15,15 +15,35 @@ model User {
 }
 
 model Character {
-  id        Int        @id
-  name      String
-  status    String
-  species   String
-  gender    String
-  origin    String
-  dimension String
-  image     String
-  bookmarks Bookmark[]
+  id               Int                @id
+  name             String
+  status           String
+  species          String
+  gender           String
+  origin           String
+  dimension        String
+  image            String
+  bookmarks        Bookmark[]
+  episodes         Episode[]          @relation("CharacterEpisode")
+  CharacterEpisode CharacterEpisode[]
+}
+
+model Episode {
+  id               Int                @id
+  airDate          String
+  name             String
+  episode          String
+  characters       Character[]        @relation("CharacterEpisode")
+  CharacterEpisode CharacterEpisode[]
+}
+
+model CharacterEpisode {
+  characterId Int
+  episodeId   Int
+  Character   Character @relation(fields: [characterId], references: [id])
+  Episode     Episode   @relation(fields: [episodeId], references: [id])
+
+  @@id([characterId, episodeId])
 }
 
 model Bookmark {

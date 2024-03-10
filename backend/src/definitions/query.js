@@ -26,7 +26,7 @@ const Query = objectType({
 
     t.nullable.field('me', {
       type: 'User',
-      resolve: (parent, args, context) => {
+      resolve: (_, __, context) => {
         // If the user is not authenticated, return null
         if (!context.user) {
           return null
@@ -42,12 +42,10 @@ const Query = objectType({
     t.list.field('characters', {
       type: 'Character',
       resolve: async (_, __, context) => {
-        // Try to find characters in the database
         let characters = await context.prisma.character.findMany()
 
-        // If less characters than per page are found, fetch from the API
-        if (characters.length < 20) {
-          const { data } = await client.query({
+        if (true) {
+          const { data: charactersData } = await client.query({
             query: gql`
               query {
                 characters(page: 1) {
@@ -63,6 +61,12 @@ const Query = objectType({
                     location {
                       dimension
                     }
+                    episode {
+                      id
+                      name
+                      air_date
+                      episode
+                    }
                     image
                   }
                 }
@@ -70,29 +74,56 @@ const Query = objectType({
             `,
           })
 
-          // Map the results to match the Character model in the database
-          const newCharacters = data.characters.results.map((character) => ({
-            id: parseInt(character.id),
-            name: character.name,
-            status: character.status,
-            species: character.species,
-            gender: character.gender,
-            origin: character.origin.name,
-            dimension: character.location.dimension || 'unknown',
-            image: character.image,
-          }))
+          const newCharacters = charactersData.characters.results.map(
+            (character) => ({
+              id: parseInt(character.id),
+              name: character.name,
+              status: character.status,
+              species: character.species,
+              gender: character.gender,
+              origin: character.origin.name,
+              dimension: character.location.dimension || 'unknown',
+              image: character.image,
+              episode: character.episode,
+            }),
+          )
 
           for (const character of newCharacters) {
-            await context.prisma.character.upsert({
-              where: { id: parseInt(character.id) },
-              update: character,
-              create: character,
-            })
-          }
+            const { episode, ...characterData } = character
 
+            const characterRecord = await context.prisma.character.upsert({
+              where: { id: parseInt(character.id) },
+              update: characterData,
+              create: characterData,
+            })
+
+            const lastThreeEpisodes = episode.slice(-3)
+
+            for (const episodeData of lastThreeEpisodes) {
+              const { __typename, id, air_date, ...data } = episodeData
+              const recordId = parseInt(id)
+              await context.prisma.episode.upsert({
+                where: { id: parseInt(id) },
+                update: {
+                  ...data,
+                  airDate: air_date,
+                  characters: {
+                    connect: { id: characterRecord.id },
+                  },
+                },
+                create: {
+                  ...data,
+                  airDate: air_date,
+                  id: recordId,
+                  characters: {
+                    connect: { id: characterRecord.id },
+                  },
+                },
+              })
+            }
+          }
           characters = await context.prisma.character.findMany()
         }
-
         return characters
       },
     })

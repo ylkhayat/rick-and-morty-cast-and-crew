@@ -8,8 +8,11 @@ import './Header.css';
 import { useSliderContext } from '../../pages/Slider/Slide';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LogoutOutlined } from '@ant-design/icons';
+import { useApolloClient } from '@apollo/client';
 
 export const Header = () => {
+  const client = useApolloClient();
+
   const sessionId = window.sessionStorage.getItem('sessionId');
   const {
     token: { colorBgBase, red5 },
@@ -20,6 +23,7 @@ export const Header = () => {
   } = useSliderContext();
 
   const onLogout = () => {
+    client.clearStore();
     window.sessionStorage.removeItem('sessionId');
     navigate('left', 'authentication');
   };

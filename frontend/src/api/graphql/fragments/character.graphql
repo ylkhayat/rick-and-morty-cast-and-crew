@@ -7,4 +7,9 @@ fragment character on Character {
   origin
   species
   status
+  episodes {
+    id
+    name
+    airDate
+  }
 }

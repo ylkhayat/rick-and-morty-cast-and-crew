@@ -1,6 +1,6 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef } from 'react';
 
-import { theme } from 'antd';
+import { theme, Typography } from 'antd';
 import {
   SkinOutlined,
   PushpinOutlined,
@@ -12,28 +12,79 @@ import {
 
 import './Character.css';
 import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Slide,
+  SliderProvider,
+  useSliderContext,
+} from '../../pages/Slider/Slide';
+import { useHighlightedCharacterContext } from '../../pages/authenticated/HighlightedCharacter';
 
-export const Character = ({
+const { Paragraph } = Typography;
+
+const Episodes = ({ character }) => {
+  return (
+    <div className="character-episodes-container">
+      <div className="character-episodes">
+        {character.episodes.slice(0, 4).map((episode) => (
+          <div key={episode.id} className="character-episode-container">
+            <p className="character-episode-name">{episode.name}</p>
+            <p className="character-episode-air-date">{episode.airDate}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+const Info = ({ character }) => {
+  const {
+    token: { green7, red7, orange7 },
+  } = theme.useToken();
+  return (
+    <>
+      <p>
+        <EnvironmentOutlined /> {character.origin}
+      </p>
+      <p>
+        <PushpinOutlined /> {character.dimension}
+      </p>
+      <p>
+        <SkinOutlined /> {character.species}
+      </p>
+      <p
+        className="character-status"
+        style={{
+          borderColor:
+            character.status === 'Alive'
+              ? green7
+              : character.status === 'Dead'
+                ? red7
+                : orange7,
+        }}
+      >
+        {character.status}
+      </p>
+    </>
+  );
+};
+
+const CharacterInternal = ({
   character,
   isBookmarked,
   bookmarkCharacter,
   unbookmarkCharacter,
 }) => {
+  const { highlightedCharacterId, setHighlightedCharacterId } =
+    useHighlightedCharacterContext();
+  const { state, navigate } = useSliderContext();
   const {
-    token: {
-      colorBorder,
-      borderRadius,
-      green7,
-      red7,
-      colorBgContainer,
-      orange7,
-    },
+    token: { colorBorder, borderRadius, green7, red7, orange7, colorWhite },
   } = theme.useToken();
   return (
     <div
-      className="character-container"
+      className={`character-sub-container ${highlightedCharacterId === character.id ? 'character-sub-container-focused' : ''}`}
       style={{
-        borderColor: colorBorder,
+        borderColor:
+          highlightedCharacterId === character.id ? colorWhite : colorBorder,
         borderRadius,
       }}
     >
@@ -64,7 +115,6 @@ export const Character = ({
         <div
           className="character-gender"
           style={{
-            backgroundColor: colorBgContainer,
             borderColor: colorBorder,
           }}
         >
@@ -89,7 +139,6 @@ export const Character = ({
                   src="/assets/star-fill.svg"
                   className="character-bookmark-fill"
                   onClick={() => {
-                    console.log(character.id);
                     unbookmarkCharacter({
                       variables: { characterId: character.id },
                     });
@@ -105,8 +154,6 @@ export const Character = ({
               src="/assets/star-outline.svg"
               className="character-bookmark"
               onClick={() => {
-                console.log(character.id);
-
                 bookmarkCharacter({
                   variables: { characterId: character.id },
                 });
@@ -114,31 +161,53 @@ export const Character = ({
             />
           </div>
         </div>
-        <div className="character-rest-info-container">
-          <p>
-            <EnvironmentOutlined /> {character.origin}
-          </p>
-          <p>
-            <PushpinOutlined /> {character.dimension}
-          </p>
-          <p>
-            <SkinOutlined /> {character.species}
-          </p>
-          <p
-            className="character-status"
-            style={{
-              borderColor:
-                character.status === 'Alive'
-                  ? green7
-                  : character.status === 'Dead'
-                    ? red7
-                    : orange7,
-            }}
-          >
-            {character.status}
-          </p>
+        <div
+          className="character-rest-info-container"
+          onClick={() => {
+            if (state.slideKey === 'episodes') {
+              setHighlightedCharacterId(null);
+              navigate('up', 'info');
+            } else {
+              setHighlightedCharacterId(character.id);
+              navigate('down', 'episodes');
+            }
+          }}
+        >
+          {state.slideKey === 'episodes' ? (
+            <Slide slideKey="episodes">
+              <Episodes character={character} />
+            </Slide>
+          ) : (
+            <Slide slideKey="info">
+              <Info
+                character={character}
+                isBookmarked={isBookmarked}
+                unbookmarkCharacter={unbookmarkCharacter}
+                bookmarkCharacter={bookmarkCharacter}
+              />
+            </Slide>
+          )}
+          <Paragraph className="show-more-less">
+            Click to {state.slideKey === 'info' ? 'show episodes' : 'go back'}
+          </Paragraph>
         </div>
       </div>
     </div>
   );
 };
+
+export const Character = forwardRef((props, ref) => {
+  const { highlightedCharacterId } = useHighlightedCharacterContext();
+
+  return (
+    <div ref={ref} className="character-container">
+      <SliderProvider
+        slideKey={
+          highlightedCharacterId === props.character.id ? 'episodes' : 'info'
+        }
+      >
+        <CharacterInternal {...props} />
+      </SliderProvider>
+    </div>
+  );
+});
