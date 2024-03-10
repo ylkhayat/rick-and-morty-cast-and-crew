@@ -1,19 +1,18 @@
 .landing-container {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    height: 100%;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
 }
 
-
 .landing-image {
-    width: auto;
-    height: 250px;
-    aspect-ratio: 1/1;
-    position: absolute;
-    bottom: -50px;
-    left: -10px;
-    transform: scaleX(-1);
+  width: auto;
+  height: 250px;
+  aspect-ratio: 1/1;
+  position: absolute;
+  bottom: -50px;
+  left: -10px;
+  transform: scaleX(-1);
 }

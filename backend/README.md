@@ -2,10 +2,10 @@
 
 This example shows how to implement a **GraphQL server with JavaScript** with the following stack:
 
-- [**Apollo Server**](https://github.com/apollographql/apollo-server): HTTP server for GraphQL APIs   
-- [**GraphQL Nexus**](https://nexusjs.org/docs/): GraphQL schema definition and resolver implementation 
-- [**Prisma Client**](https://www.prisma.io/docs/concepts/components/prisma-client): Databases access (ORM)                  
-- [**Prisma Migrate**](https://www.prisma.io/docs/concepts/components/prisma-migrate): Database migrations               
+- [**Apollo Server**](https://github.com/apollographql/apollo-server): HTTP server for GraphQL APIs
+- [**GraphQL Nexus**](https://nexusjs.org/docs/): GraphQL schema definition and resolver implementation
+- [**Prisma Client**](https://www.prisma.io/docs/concepts/components/prisma-client): Databases access (ORM)
+- [**Prisma Migrate**](https://www.prisma.io/docs/concepts/components/prisma-migrate): Database migrations
 - [**SQLite**](https://www.sqlite.org/index.html): Local, file-based SQL database
 
 ## Contents
@@ -27,6 +27,7 @@ npx try-prisma@latest --template javascript/graphql
 ```
 
 Install npm dependencies:
+
 ```
 cd graphql
 npm install
@@ -57,8 +58,7 @@ Run the following command to create your SQLite database file. This also creates
 npx prisma migrate dev --name init
 ```
 
-When `npx prisma migrate dev` is executed against a newly created database, seeding is also triggered.  The seed file in [`prisma/seed.js`](./prisma/seed.js) will be executed and your database will be populated with the sample data.
-
+When `npx prisma migrate dev` is executed against a newly created database, seeding is also triggered. The seed file in [`prisma/seed.js`](./prisma/seed.js) will be executed and your database will be populated with the sample data.
 
 ### 3. Start the GraphQL server
 
@@ -69,7 +69,6 @@ npm run dev
 ```
 
 Navigate to [http://localhost:4000](http://localhost:4000) in your browser to explore the API of your GraphQL server in a [GraphQL Playground](https://github.com/prisma/graphql-playground).
-
 
 ## Using the GraphQL API
 
@@ -101,11 +100,7 @@ query {
 
 ```graphql
 {
-  draftsByUser(
-    userUniqueInput: {
-      email: "mahmoud@prisma.io"
-    }
-  ) {
+  draftsByUser(userUniqueInput: { email: "mahmoud@prisma.io" }) {
     id
     title
     content
@@ -118,7 +113,6 @@ query {
   }
 }
 ```
-
 
 ### Create a new user
 
@@ -197,9 +191,7 @@ mutation {
 
 ```graphql
 {
-  feed(
-    searchString: "prisma"
-  ) {
+  feed(searchString: "prisma") {
     id
     title
     content
@@ -212,11 +204,7 @@ mutation {
 
 ```graphql
 {
-  feed(
-    skip: 2
-    take: 2
-    orderBy: { updatedAt: desc }
-  ) {
+  feed(skip: 2, take: 2, orderBy: { updatedAt: desc }) {
     id
     updatedAt
     title
@@ -230,7 +218,7 @@ mutation {
 
 ```graphql
 {
-  postById(id: __POST_ID__ ) {
+  postById(id: __POST_ID__) {
     id
     title
     content
@@ -243,7 +231,7 @@ Note that you need to replace the `__POST_ID__` placeholder with an actual `id` 
 
 ```graphql
 {
-  postById(id: 5 ) {
+  postById(id: 5) {
     id
     title
     content
@@ -424,7 +412,7 @@ const Mutation = objectType({
 +         }),
 +       ),
 +       bio: stringArg()
-+     }, 
++     },
 +     resolve: async (_, args, context) => {
 +       return context.prisma.profile.create({
 +         data: {
@@ -449,9 +437,7 @@ Finally, you can test the new mutation like this:
 ```graphql
 mutation {
   addProfileForUser(
-    userUniqueInput: {
-      email: "mahmoud@prisma.io"
-    }
+    userUniqueInput: { email: "mahmoud@prisma.io" }
     bio: "I like turtles"
   ) {
     id
@@ -516,7 +502,7 @@ const userWithUpdatedProfile = await prisma.user.update({
 
 ## Switch to another database (e.g. PostgreSQL, MySQL, SQL Server, MongoDB)
 
-If you want to try this example with another database than SQLite, you can adjust the the database connection in [`prisma/schema.prisma`](./prisma/schema.prisma) by reconfiguring the `datasource` block. 
+If you want to try this example with another database than SQLite, you can adjust the the database connection in [`prisma/schema.prisma`](./prisma/schema.prisma) by reconfiguring the `datasource` block.
 
 Learn more about the different connection configurations in the [docs](https://www.prisma.io/docs/reference/database-reference/connection-urls).
 
