@@ -101,7 +101,7 @@ export type UserInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type BookmarkFragment = { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number } | null };
+export type BookmarkFragment = { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number, name?: string | null } | null };
 
 export type CharacterFragment = { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null };
 
@@ -112,7 +112,7 @@ export type BookmarkCharacterMutationVariables = Exact<{
 }>;
 
 
-export type BookmarkCharacterMutation = { __typename?: 'Mutation', bookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number } | null } };
+export type BookmarkCharacterMutation = { __typename?: 'Mutation', bookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number, name?: string | null } | null } };
 
 export type LoginOrSignupMutationVariables = Exact<{
   data: UserInput;
@@ -126,7 +126,7 @@ export type UnbookmarkCharacterMutationVariables = Exact<{
 }>;
 
 
-export type UnbookmarkCharacterMutation = { __typename?: 'Mutation', unbookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number } | null } };
+export type UnbookmarkCharacterMutation = { __typename?: 'Mutation', unbookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number, name?: string | null } | null } };
 
 export type BookmarksQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -150,6 +150,7 @@ export const BookmarkFragmentDoc = gql`
   id
   character {
     id
+    name
   }
 }
     `;

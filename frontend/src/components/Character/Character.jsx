@@ -2,11 +2,8 @@ import React, { forwardRef } from 'react';
 
 import { theme, Typography } from 'antd';
 import {
-  SkinOutlined,
-  PushpinOutlined,
   ManOutlined,
   WomanOutlined,
-  EnvironmentOutlined,
   QuestionOutlined,
 } from '@ant-design/icons';
 
@@ -18,54 +15,12 @@ import {
   useSliderContext,
 } from '../../pages/Slider/Slide';
 import { useHighlightedCharacterContext } from '../../providers/HighlightedCharacterContext';
+import { Episodes } from './Episodes';
+import { Info } from './Info';
+import { StarFilled } from './StarFilled';
+import { StarOutlined } from './StarOutlined';
 
 const { Paragraph } = Typography;
-
-const Episodes = ({ character }) => {
-  return (
-    <div className="character-episodes-container">
-      <div className="character-episodes">
-        {character.episodes.slice(0, 4).map((episode) => (
-          <div key={episode.id} className="character-episode-container">
-            <p className="character-episode-name">{episode.name}</p>
-            <p className="character-episode-air-date">{episode.airDate}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-const Info = ({ character }) => {
-  const {
-    token: { green7, red7, orange7 },
-  } = theme.useToken();
-  return (
-    <>
-      <p>
-        <EnvironmentOutlined /> {character.origin}
-      </p>
-      <p>
-        <PushpinOutlined /> {character.dimension}
-      </p>
-      <p>
-        <SkinOutlined /> {character.species}
-      </p>
-      <p
-        className="character-status"
-        style={{
-          borderColor:
-            character.status === 'Alive'
-              ? green7
-              : character.status === 'Dead'
-                ? red7
-                : orange7,
-        }}
-      >
-        {character.status}
-      </p>
-    </>
-  );
-};
 
 const CharacterInternal = ({
   character,
@@ -77,7 +32,15 @@ const CharacterInternal = ({
     useHighlightedCharacterContext();
   const { state, navigate } = useSliderContext();
   const {
-    token: { colorBorder, borderRadius, green7, red7, orange7, colorWhite },
+    token: {
+      colorBorder,
+      borderRadius,
+      green7,
+      red7,
+      orange7,
+      colorWhite,
+      yellow5,
+    },
   } = theme.useToken();
   return (
     <div
@@ -135,9 +98,8 @@ const CharacterInternal = ({
           <div className="character-bookmark-container">
             <AnimatePresence>
               {isBookmarked && (
-                <motion.img
-                  src="/assets/star-fill.svg"
-                  className="character-bookmark-fill"
+                <motion.div
+                  className="character-bookmark-filled"
                   onClick={() => {
                     unbookmarkCharacter({
                       variables: { characterId: character.id },
@@ -147,18 +109,29 @@ const CharacterInternal = ({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0 }}
                   transition={{ duration: 0.2 }}
-                />
+                >
+                  <StarFilled
+                    style={{
+                      color: yellow5,
+                    }}
+                  />
+                </motion.div>
               )}
             </AnimatePresence>
-            <img
-              src="/assets/star-outline.svg"
-              className="character-bookmark"
+            <div
+              className="character-bookmark-outlined"
               onClick={() => {
                 bookmarkCharacter({
                   variables: { characterId: character.id },
                 });
               }}
-            />
+            >
+              <StarOutlined
+                style={{
+                  color: yellow5,
+                }}
+              />
+            </div>
           </div>
         </div>
         <div

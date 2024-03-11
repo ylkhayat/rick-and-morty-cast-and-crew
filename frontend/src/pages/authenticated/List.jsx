@@ -44,7 +44,7 @@ export const List = () => {
         character: { name },
       },
     }) => {
-      message.info(`${name.split(' ')[0]} is no longer a favorite of yours!`);
+      message.info(`${name?.split(' ')[0]} is no longer a favorite of yours!`);
     },
   });
 

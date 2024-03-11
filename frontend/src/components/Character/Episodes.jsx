@@ -1,27 +1,8 @@
-import React, { forwardRef } from 'react';
-
-import { theme, Typography } from 'antd';
-import {
-  SkinOutlined,
-  PushpinOutlined,
-  ManOutlined,
-  WomanOutlined,
-  EnvironmentOutlined,
-  QuestionOutlined,
-} from '@ant-design/icons';
+import React from 'react';
 
 import './Character.css';
-import { AnimatePresence, motion } from 'framer-motion';
-import {
-  Slide,
-  SliderProvider,
-  useSliderContext,
-} from '../../pages/Slider/Slide';
-import { useHighlightedCharacterContext } from '../../providers/HighlightedCharacterContext';
 
-const { Paragraph } = Typography;
-
-const Episodes = ({ character }) => {
+export const Episodes = ({ character }) => {
   return (
     <div className="character-episodes-container">
       <div className="character-episodes">

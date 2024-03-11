@@ -2,11 +2,11 @@ import React, { createContext, useContext, useState } from 'react';
 
 const AppContext = createContext({
   isDarkMode: true,
-  setIsDarkMode: (newIsDarkMode) => {},
+  setIsDarkMode: (_) => {},
 });
 
 export const AppProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   return (
     <AppContext.Provider value={{ isDarkMode, setIsDarkMode }}>
       {children}
