@@ -1,8 +1,11 @@
-query bookmarks {
-  bookmarks {
-    id
-    character {
-      ...character
+query bookmarks($page: Int) {
+  bookmarks(page: $page) {
+    results {
+      id
+      character {
+        ...character
+      }
     }
+    total
   }
 }

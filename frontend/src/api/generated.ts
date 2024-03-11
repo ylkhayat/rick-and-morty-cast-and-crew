@@ -27,6 +27,12 @@ export type Bookmark = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type BookmarkResults = {
+  __typename?: 'BookmarkResults';
+  results: Array<Bookmark>;
+  total: Scalars['Int']['output'];
+};
+
 export type Character = {
   __typename?: 'Character';
   bookmarks?: Maybe<Array<Maybe<Bookmark>>>;
@@ -79,9 +85,14 @@ export type MutationUnbookmarkCharacterArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  bookmarks: Array<Bookmark>;
+  bookmarks: BookmarkResults;
   characters?: Maybe<Array<Maybe<Character>>>;
   me?: Maybe<User>;
+};
+
+
+export type QueryBookmarksArgs = {
+  page?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -128,10 +139,12 @@ export type UnbookmarkCharacterMutationVariables = Exact<{
 
 export type UnbookmarkCharacterMutation = { __typename?: 'Mutation', unbookmarkCharacter: { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number, name?: string | null } | null } };
 
-export type BookmarksQueryVariables = Exact<{ [key: string]: never; }>;
+export type BookmarksQueryVariables = Exact<{
+  page?: InputMaybe<Scalars['Int']['input']>;
+}>;
 
 
-export type BookmarksQuery = { __typename?: 'Query', bookmarks: Array<{ __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null }> };
+export type BookmarksQuery = { __typename?: 'Query', bookmarks: { __typename?: 'BookmarkResults', total: number, results: Array<{ __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null }> } };
 
 export type CharactersQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -283,12 +296,15 @@ export type UnbookmarkCharacterMutationHookResult = ReturnType<typeof useUnbookm
 export type UnbookmarkCharacterMutationResult = Apollo.MutationResult<UnbookmarkCharacterMutation>;
 export type UnbookmarkCharacterMutationOptions = Apollo.BaseMutationOptions<UnbookmarkCharacterMutation, UnbookmarkCharacterMutationVariables>;
 export const BookmarksDocument = gql`
-    query bookmarks {
-  bookmarks {
-    id
-    character {
-      ...character
+    query bookmarks($page: Int) {
+  bookmarks(page: $page) {
+    results {
+      id
+      character {
+        ...character
+      }
     }
+    total
   }
 }
     ${CharacterFragmentDoc}`;
@@ -305,6 +321,7 @@ export const BookmarksDocument = gql`
  * @example
  * const { data, loading, error } = useBookmarksQuery({
  *   variables: {
+ *      page: // value for 'page'
  *   },
  * });
  */

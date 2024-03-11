@@ -9,6 +9,11 @@ type Bookmark {
   updatedAt: DateTime!
 }
 
+type BookmarkResults {
+  results: [Bookmark!]!
+  total: Int!
+}
+
 type Character {
   bookmarks: [Bookmark]
   dimension: String
@@ -46,7 +51,7 @@ type Mutation {
 }
 
 type Query {
-  bookmarks: [Bookmark!]!
+  bookmarks(page: Int = 1): BookmarkResults!
   characters(page: Int = 1): [Character]
   me: User
 }

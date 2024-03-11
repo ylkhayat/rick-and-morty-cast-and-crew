@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  ConfigProvider,
+  App as AntdApp,
   Switch,
   Button,
   Layout,
@@ -19,8 +19,14 @@ import { useApolloClient } from '@apollo/client';
 import { useAppContext } from '../../providers/AppContext';
 
 export const Header = () => {
-  const { isDarkMode, setIsDarkMode } = useAppContext();
+  const {
+    settings: { isDarkMode, displayMode, bookmarks, characters },
+    toggleDarkMode,
+    toggleDisplayMode,
+  } = useAppContext();
   const client = useApolloClient();
+
+  const { message } = AntdApp.useApp();
 
   const sessionId = window.sessionStorage.getItem('sessionId');
   const {
@@ -34,6 +40,7 @@ export const Header = () => {
   const onLogout = () => {
     client.clearStore();
     window.sessionStorage.removeItem('sessionId');
+    message.success('Ciao! 👋');
     navigate('left', 'authentication');
   };
 
@@ -56,23 +63,31 @@ export const Header = () => {
               <div className="app-header-switch">
                 <p>Light</p>
                 <Switch
-                  onChange={(newIsDarkMode) => setIsDarkMode(newIsDarkMode)}
+                  onChange={() => toggleDarkMode()}
                   checked={isDarkMode}
                 />
                 <p>Dark</p>
               </div>
 
-              <Paragraph className="app-header-greeting">
-                What's Good! {sessionId}!
-              </Paragraph>
-              <Button
-                onClick={onLogout}
-                icon={<LogoutOutlined />}
-                style={{
-                  color: red5,
-                  borderColor: red5,
-                }}
-              />
+              <div>
+                <Button onClick={toggleDisplayMode}>
+                  {displayMode === 'bookmarks'
+                    ? `${characters.total} Characters`
+                    : `${bookmarks.total} Bookmarks`}
+                </Button>
+              </div>
+
+              <div className="app-header-switch">
+                <p>{sessionId}! Logging out?</p>
+                <Button
+                  onClick={onLogout}
+                  icon={<LogoutOutlined />}
+                  style={{
+                    color: red5,
+                    borderColor: red5,
+                  }}
+                />
+              </div>
             </motion.div>
           )}
         </LayoutHeader>

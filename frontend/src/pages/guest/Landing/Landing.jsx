@@ -15,7 +15,9 @@ export const Landing = () => {
       if (data.me) {
         navigate('up', 'list');
       } else {
-        message.error('You are not authenticated.');
+        if (window.sessionStorage.getItem('sessionId')) {
+          message.error('You are not authenticated.');
+        }
         window.sessionStorage.removeItem('sessionId');
         navigate('up', 'authentication');
       }

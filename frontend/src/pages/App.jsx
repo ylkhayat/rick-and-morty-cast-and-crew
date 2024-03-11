@@ -21,7 +21,10 @@ const AppInternalInternal = () => {
   const { state } = useSliderContext();
 
   useEffect(() => {
-    message.success('Hiho!');
+    message.success(
+      'Hello! Welcome to the app, and please enjoy going through the code. I hope using a UI library is okay because I wanted to develop something pretty :).',
+      10,
+    );
     return () => {
       message.error('Byebye!');
     };
@@ -73,7 +76,9 @@ const AppInternalInternal = () => {
 
 const AppInternal = () => {
   const { defaultAlgorithm, darkAlgorithm } = theme;
-  const { isDarkMode } = useAppContext();
+  const {
+    settings: { isDarkMode },
+  } = useAppContext();
 
   return (
     <Provider>

@@ -9,18 +9,36 @@ const client = new ApolloClient({
 const Query = objectType({
   name: 'Query',
   definition(t) {
-    t.nonNull.list.nonNull.field('bookmarks', {
-      type: 'Bookmark',
-      resolve: (_, __, context) => {
+    t.nonNull.field('bookmarks', {
+      type: 'BookmarkResults',
+      args: {
+        page: intArg({ default: 1 }),
+      },
+      resolve: async (_, args, context) => {
         if (!context.user) {
           throw new Error('You must be authenticated to view bookmarks')
         }
+        const perPage = 20
+        const skip = (args.page - 1) * perPage
 
-        return context.prisma.bookmark.findMany({
+        const results = await context.prisma.bookmark.findMany({
+          where: {
+            userId: context.user.id,
+          },
+          skip,
+          take: perPage,
+        })
+
+        const total = await context.prisma.bookmark.count({
           where: {
             userId: context.user.id,
           },
         })
+
+        return {
+          results,
+          total,
+        }
       },
     })
 
