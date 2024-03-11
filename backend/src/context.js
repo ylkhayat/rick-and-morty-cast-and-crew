@@ -6,11 +6,9 @@ const prisma = new PrismaClient()
 const createContext = async ({ req }) => {
   let username = req.headers.authorization || ''
 
-  // remove the "Bearer " prefix
   if (username.startsWith('Bearer ')) {
     username = username.slice(7)
   }
-  // retrieve a user with the username
   const user = await prisma.user.findUnique({
     where: {
       username: username,

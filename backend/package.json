@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "generate": "node ./src/schema.js"
+    "generate": "node ./src/schema.js",
+    "db:migrate": "prisma migrate dev"
   },
   "prettier": {
     "semi": false,

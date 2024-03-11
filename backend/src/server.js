@@ -9,7 +9,7 @@ const start = async () => {
     context: createContext,
     listen: { port: 4000 },
   })
-  console.log(`🚀 Server ready at: ${url}`)
+  console.info(`Server ready at: ${url}`)
 }
 
 start()
