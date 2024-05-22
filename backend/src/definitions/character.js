@@ -12,15 +12,12 @@ const Character = objectType({
     t.string('status')
     t.string('origin')
     t.string('dimension')
-
-    t.list.field('bookmarks', {
-      type: 'Bookmark',
-      resolve: (parent, _, context) => {
-        return context.prisma.character
-          .findUnique({
-            where: { id: parent.id },
-          })
-          .bookmarks()
+    t.boolean('isBookmarked', {
+      resolve: async (parent, _, context) => {
+        const bookmark = await context.prisma.bookmark.findFirst({
+          where: { characterId: parent.id, userId: context.user.id },
+        })
+        return Boolean(bookmark)
       },
     })
 

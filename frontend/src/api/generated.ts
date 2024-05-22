@@ -35,12 +35,12 @@ export type BookmarkResults = {
 
 export type Character = {
   __typename?: 'Character';
-  bookmarks?: Maybe<Array<Maybe<Bookmark>>>;
   dimension?: Maybe<Scalars['String']['output']>;
   episodes?: Maybe<Array<Maybe<Episode>>>;
   gender?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   image?: Maybe<Scalars['String']['output']>;
+  isBookmarked?: Maybe<Scalars['Boolean']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   origin?: Maybe<Scalars['String']['output']>;
   species?: Maybe<Scalars['String']['output']>;
@@ -114,7 +114,7 @@ export type UserInput = {
 
 export type BookmarkFragment = { __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', id: number, name?: string | null } | null };
 
-export type CharacterFragment = { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null };
+export type CharacterFragment = { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, isBookmarked?: boolean | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null };
 
 export type UserFragment = { __typename?: 'User', id: number, username: string };
 
@@ -144,14 +144,14 @@ export type BookmarksQueryVariables = Exact<{
 }>;
 
 
-export type BookmarksQuery = { __typename?: 'Query', bookmarks: { __typename?: 'BookmarkResults', total: number, results: Array<{ __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null }> } };
+export type BookmarksQuery = { __typename?: 'Query', bookmarks: { __typename?: 'BookmarkResults', total: number, results: Array<{ __typename?: 'Bookmark', id: number, character?: { __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, isBookmarked?: boolean | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null }> } };
 
 export type CharactersQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type CharactersQuery = { __typename?: 'Query', characters?: Array<{ __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null> | null };
+export type CharactersQuery = { __typename?: 'Query', characters?: Array<{ __typename?: 'Character', gender?: string | null, id: number, image?: string | null, dimension?: string | null, name?: string | null, origin?: string | null, species?: string | null, status?: string | null, isBookmarked?: boolean | null, episodes?: Array<{ __typename?: 'Episode', id: number, name: string, airDate: string } | null> | null } | null> | null };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -177,6 +177,7 @@ export const CharacterFragmentDoc = gql`
   origin
   species
   status
+  isBookmarked
   episodes {
     id
     name

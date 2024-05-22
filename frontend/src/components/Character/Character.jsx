@@ -24,7 +24,6 @@ const { Paragraph } = Typography;
 
 const CharacterInternal = ({
   character,
-  isBookmarked,
   bookmarkCharacter,
   unbookmarkCharacter,
 }) => {
@@ -97,7 +96,7 @@ const CharacterInternal = ({
           </p>
           <div className="character-bookmark-container">
             <AnimatePresence>
-              {isBookmarked && (
+              {character.isBookmarked && (
                 <motion.div
                   className="character-bookmark-filled"
                   onClick={() => {
@@ -154,7 +153,6 @@ const CharacterInternal = ({
             <Slide slideKey="info">
               <Info
                 character={character}
-                isBookmarked={isBookmarked}
                 unbookmarkCharacter={unbookmarkCharacter}
                 bookmarkCharacter={bookmarkCharacter}
               />
@@ -169,11 +167,11 @@ const CharacterInternal = ({
   );
 };
 
-export const Character = forwardRef((props, ref) => {
+export const Character = (props) => {
   const { highlightedCharacterId } = useHighlightedCharacterContext();
 
   return (
-    <div ref={ref} className="character-container">
+    <div className="character-container">
       <SliderProvider
         slideKey={
           highlightedCharacterId === props.character.id ? 'episodes' : 'info'
@@ -183,4 +181,4 @@ export const Character = forwardRef((props, ref) => {
       </SliderProvider>
     </div>
   );
-});
+};

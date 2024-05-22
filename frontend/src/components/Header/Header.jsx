@@ -22,6 +22,7 @@ export const Header = () => {
   const {
     settings: { isDarkMode, displayMode, bookmarks, characters },
     toggleDarkMode,
+    reset,
     toggleDisplayMode,
   } = useAppContext();
   const client = useApolloClient();
@@ -39,6 +40,7 @@ export const Header = () => {
 
   const onLogout = () => {
     client.clearStore();
+    reset();
     window.sessionStorage.removeItem('sessionId');
     message.success('Ciao! 👋');
     navigate('left', 'authentication');

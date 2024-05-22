@@ -13,7 +13,7 @@ import { Authentication } from './guest/Authentication/Authentication';
 import { List } from './authenticated/List';
 import { AppProvider, useAppContext } from '../providers/AppContext';
 
-const AppInternalInternal = () => {
+const AppInternal = () => {
   const { message } = AntdApp.useApp();
   const {
     token: { colorBgContainer },
@@ -74,7 +74,7 @@ const AppInternalInternal = () => {
   );
 };
 
-const AppInternal = () => {
+const App = () => {
   const { defaultAlgorithm, darkAlgorithm } = theme;
   const {
     settings: { isDarkMode },
@@ -91,19 +91,15 @@ const AppInternal = () => {
         }}
       >
         <AntdApp>
-          <SliderProvider slideKey="landing">
-            <AppInternalInternal />
-          </SliderProvider>
+          <AppProvider>
+            <SliderProvider slideKey="landing">
+              <AppInternal />
+            </SliderProvider>
+          </AppProvider>
         </AntdApp>
       </ConfigProvider>
     </Provider>
   );
 };
-
-const App = () => (
-  <AppProvider>
-    <AppInternal />
-  </AppProvider>
-);
 
 export default App;

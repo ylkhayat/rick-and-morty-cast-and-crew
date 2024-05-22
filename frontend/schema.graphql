@@ -15,12 +15,12 @@ type BookmarkResults {
 }
 
 type Character {
-  bookmarks: [Bookmark]
   dimension: String
   episodes: [Episode]
   gender: String
   id: Int!
   image: String
+  isBookmarked: Boolean
   name: String
   origin: String
   species: String

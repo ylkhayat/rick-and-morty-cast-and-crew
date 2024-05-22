@@ -1,9 +1,7 @@
-import React, { useMemo, useState } from 'react';
-import FlipMove from 'react-flip-move';
+import React, { useEffect, useState } from 'react';
 import { Character } from '../../components/Character/Character';
 import {
   useBookmarkCharacterMutation,
-  useBookmarksQuery,
   useUnbookmarkCharacterMutation,
 } from '../../api/generated';
 import { useAppContext } from '../../providers/AppContext';
@@ -14,22 +12,11 @@ export const Bookmarks = () => {
   const [loading, setLoading] = useState(true);
 
   const {
-    settings: { bookmarks },
     updateBookmarks,
+    settings: {
+      bookmarks: { page, total, results },
+    },
   } = useAppContext();
-
-  const { data: bookmarksData } = useBookmarksQuery({
-    fetchPolicy: 'cache-first',
-    onCompleted: ({ bookmarks: { total } }) => {
-      updateBookmarks({ total });
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-    },
-    variables: {
-      page: bookmarks.page,
-    },
-  });
 
   const [bookmarkCharacter] = useBookmarkCharacterMutation({
     refetchQueries: ['bookmarks'],
@@ -38,10 +25,10 @@ export const Bookmarks = () => {
         character: { name },
       },
     }) => {
+      updateBookmarks();
       message.success(`${name.split(' ')[0]} is now favorited!`);
     },
   });
-
   const [unbookmarkCharacter] = useUnbookmarkCharacterMutation({
     refetchQueries: ['bookmarks'],
     onCompleted: ({
@@ -50,14 +37,24 @@ export const Bookmarks = () => {
       },
     }) => {
       message.info(`${name?.split(' ')[0]} is no longer a favorite of yours!`);
+      updateBookmarks();
     },
   });
 
+    /**
+   * If there are no bookmarks on the current page, and we are not on the first page, go back one page
+   */
+    useEffect(() => {
+      if (results && results.length === 0 && page > 1 && total >= 20) {
+        updateBookmarks({ page: page - 1 });
+      }
+    }, [page, updateBookmarks]);
+    
   if (loading) {
     return <Spin size="large" />;
   }
 
-  if (bookmarksData?.bookmarks.results.length === 0) {
+  if (results && results.length === 0) {
     return (
       <p>
         No bookmarks yet! Go to the characters tab and start bookmarking your
@@ -67,7 +64,7 @@ export const Bookmarks = () => {
   }
   return (
     <div className="list-sub-container">
-      {bookmarksData?.bookmarks.results.map((bookmark) => (
+      {results?.map((bookmark) => (
         <Character
           character={bookmark.character}
           isBookmarked

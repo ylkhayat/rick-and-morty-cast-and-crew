@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState } from 'react';
+import { useBookmarksQuery } from '../api/generated';
 
 const AppContext = createContext({
   settings: {
-    isDarkMode: true,
     displayMode: 'characters',
     bookmarks: {
       page: 1,
+      results: [],
       total: 0,
     },
     characters: {
@@ -13,19 +14,17 @@ const AppContext = createContext({
       total: 826,
     },
   },
-  toggleDarkMode: (_) => {},
   toggleDisplayMode: (_) => {},
   updateBookmarks: (_) => {},
   updateCharacters: (_) => {},
+  reset: () => {},
 });
 
 export const AppProvider = ({ children }) => {
   const [settings, setSettings] = useState({
-    isDarkMode: true,
     displayMode: 'characters',
     bookmarks: {
       page: 1,
-      total: 0,
     },
     characters: {
       page: 1,
@@ -33,14 +32,21 @@ export const AppProvider = ({ children }) => {
     },
   });
 
+  const { data: bookmarksData, refetch } = useBookmarksQuery({
+    onCompleted: ({ bookmarks: { results, total } }) => {
+      updateBookmarks({ total, results });
+    },
+    variables: {
+      page: settings.bookmarks.page,
+    },
+  });
+
   const updateBookmarks = (bookmarkPayload) => {
+    refetch();
     setSettings((prev) => ({
       ...prev,
       bookmarks: { ...prev.bookmarks, ...bookmarkPayload },
     }));
-  };
-  const toggleDarkMode = () => {
-    setSettings((prev) => ({ ...prev, isDarkMode: !prev.isDarkMode }));
   };
 
   const toggleDisplayMode = () => {
@@ -57,14 +63,40 @@ export const AppProvider = ({ children }) => {
       characters: { ...prev.characters, ...charactersPayload },
     }));
   };
+
+  const reset = () => {
+    refetch();
+    setSettings({
+      displayMode: 'characters',
+      bookmarks: {
+        page: 1,
+      },
+      characters: {
+        page: 1,
+        total: 826,
+      },
+    });
+  };
+
+  const isAuthenticated = window.sessionStorage.getItem('sessionId');
+
   return (
     <AppContext.Provider
       value={{
-        settings,
-        toggleDarkMode,
+        settings: {
+          ...settings,
+          bookmarks: {
+            ...settings.bookmarks,
+            results: !isAuthenticated
+              ? []
+              : bookmarksData?.bookmarks.results ?? [],
+            total: !isAuthenticated ? 0 : bookmarksData?.bookmarks.total ?? 0,
+          },
+        },
         toggleDisplayMode,
         updateBookmarks,
         updateCharacters,
+        reset,
       }}
     >
       {children}
