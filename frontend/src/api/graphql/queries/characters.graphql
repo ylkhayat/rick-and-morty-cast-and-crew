@@ -1,5 +1,0 @@
-query characters($page: Int) {
-  characters(page: $page) {
-    ...character
-  }
-}

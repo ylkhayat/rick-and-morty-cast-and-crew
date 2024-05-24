@@ -1,5 +1,0 @@
-mutation bookmarkCharacter($characterId: Int!) {
-  bookmarkCharacter(characterId: $characterId) {
-    ...bookmark
-  }
-}

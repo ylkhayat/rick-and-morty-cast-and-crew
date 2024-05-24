@@ -1,0 +1,8 @@
+mutation unbookmarkCharacter($characterId: Int!) {
+  unbookmarkCharacter(characterId: $characterId) {
+    unbookmarkedCharacter {
+      ...bookmark
+    }
+    total
+  }
+}

@@ -1,0 +1,8 @@
+mutation bookmarkCharacter($characterId: Int!) {
+  bookmarkCharacter(characterId: $characterId) {
+    bookmarkedCharacter {
+      ...bookmark
+    }
+    total
+  }
+}

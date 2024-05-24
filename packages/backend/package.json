@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "generate": "node ./src/schema.js",
+    "db:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.9.6",
+    "@apollo/server": "4.10.1",
+    "@prisma/client": "5.10.2",
+    "date-fns": "^3.3.1",
+    "graphql": "16.8.1",
+    "graphql-scalars": "1.22.5",
+    "nexus": "1.3.0",
+    "node-cron": "3.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "3.1.0",
+    "prettier": "3.2.5",
+    "prisma": "5.10.2",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5"
+  }
+}

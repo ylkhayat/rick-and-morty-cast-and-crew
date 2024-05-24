@@ -1,2 +1,15 @@
 node_modules
 .history
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+
+
+packages/**/dist

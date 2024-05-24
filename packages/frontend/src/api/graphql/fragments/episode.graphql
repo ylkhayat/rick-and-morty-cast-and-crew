@@ -1,0 +1,5 @@
+fragment episode on Episode {
+  id
+  name
+  airDate
+}

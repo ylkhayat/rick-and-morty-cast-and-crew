@@ -1,4 +1,3 @@
-version: "3"
 services:
   db:
     image: postgres:13
@@ -6,14 +5,18 @@ services:
     environment:
       - POSTGRES_USER=db_user
       - POSTGRES_PASSWORD=db_password
+      - POSTGRES_DB=prisma
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+  
   backend:
-    build: backend
+    build:
+      context: .
+      dockerfile: ./packages/backend/Dockerfile
     volumes:
-      - ./backend:/srv/backend
+      - ./packages/backend:/app/packages/backend
     ports:
       - "4000:4000"
     depends_on:
@@ -22,11 +25,13 @@ services:
       - DATABASE_URL=postgresql://db_user:db_password@db:5432/prisma
 
   frontend:
-    build: frontend
+    build:
+      context: .
+      dockerfile: ./packages/frontend/Dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - ./frontend:/srv/frontend
+      - ./packages/frontend:/app/packages/frontend
 
 volumes:
   postgres:
