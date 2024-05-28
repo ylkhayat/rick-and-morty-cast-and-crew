@@ -11497,9 +11497,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rick-and-morty-crew@workspace:.":
+"rick-and-morty-cast-and-crew@workspace:.":
   version: 0.0.0-use.local
-  resolution: "rick-and-morty-crew@workspace:."
+  resolution: "rick-and-morty-cast-and-crew@workspace:."
   dependencies:
     "@typescript-eslint/eslint-plugin": "npm:7.10.0"
     "@typescript-eslint/parser": "npm:7.10.0"
