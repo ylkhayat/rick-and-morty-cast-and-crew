@@ -8,8 +8,18 @@ import { useAppContext } from '../../providers/AppContext';
 import { Spin } from 'antd';
 
 export const Bookmarks = () => {
+  const {
+    updateBookmarks,
+    settings: {
+      bookmarks: { page, total },
+    },
+  } = useAppContext();
   const [loading, setLoading] = useState(true);
-  const { data: bookmarksData } = useBookmarksQuery({
+  const { data: bookmarksData, fetchMore } = useBookmarksQuery({
+    fetchPolicy: 'cache-only',
+    variables: {
+      page,
+    },
     onCompleted: () => {
       setTimeout(() => {
         setLoading(false);
@@ -17,12 +27,13 @@ export const Bookmarks = () => {
     },
   });
 
-  const {
-    updateBookmarks,
-    settings: {
-      bookmarks: { page, total },
-    },
-  } = useAppContext();
+  useEffect(() => {
+    fetchMore({
+      variables: {
+        page,
+      },
+    });
+  }, [page, fetchMore]);
 
   const results = bookmarksData?.bookmarks?.results || [];
   /**

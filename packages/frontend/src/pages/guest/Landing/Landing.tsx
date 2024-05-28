@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import './Landing.css';
 import { App as AntdApp, Space, Spin } from 'antd';
@@ -7,12 +7,9 @@ import { useMeQuery } from '../../../api/generated';
 
 export const Landing = () => {
   const { navigate } = useSliderContext();
-  const { data } = useMeQuery();
-  const { message } = AntdApp.useApp();
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (data?.me) {
+  useMeQuery({
+    onCompleted: (data) => {
+      if (data.me) {
         navigate('up', 'list');
       } else {
         if (window.sessionStorage.getItem('sessionId')) {
@@ -22,12 +19,10 @@ export const Landing = () => {
         window.sessionStorage.removeItem('username');
         navigate('up', 'authentication');
       }
-    }, 1000);
+    },
+  });
+  const { message } = AntdApp.useApp();
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [data]);
   return (
     <Space className="landing-container">
       <img src="/assets/landing.png" className="landing-image" />

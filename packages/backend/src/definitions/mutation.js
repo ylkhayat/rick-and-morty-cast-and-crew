@@ -16,7 +16,7 @@ const Mutation = objectType({
       },
       resolve: async (_, args, context) => {
         const existingUser = await context.prisma.user.findUnique({
-          where: { username: args.data.username },
+          where: { username: args.data.username.toLowerCase() },
         });
 
         let user;
@@ -33,7 +33,7 @@ const Mutation = objectType({
           const hashedPassword = await hashPassword(args.data.password);
           user = await context.prisma.user.create({
             data: {
-              username: args.data.username,
+              username: args.data.username.toLowerCase(),
               password: hashedPassword,
             },
           });

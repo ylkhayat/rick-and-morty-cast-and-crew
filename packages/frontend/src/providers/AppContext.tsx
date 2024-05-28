@@ -172,6 +172,33 @@ export const AppProvider = ({ children }: AppProviderProps) => {
           overwrite: true,
         });
       }
+
+      const bookmarksResults = cache.readQuery<BookmarksQuery>({
+        query: BookmarksDocument,
+        variables: {
+          page: settings.bookmarks.page,
+        },
+      });
+
+      if (bookmarksResults?.bookmarks && data?.bookmarkCharacter) {
+        cache.writeQuery({
+          query: BookmarksDocument,
+          data: {
+            bookmarks: {
+              total: data?.bookmarkCharacter.total,
+              results: [
+                ...bookmarksResults.bookmarks.results,
+                data?.bookmarkCharacter.bookmarkedCharacter,
+              ],
+            },
+          },
+          variables: {
+            page: settings.bookmarks.page,
+          },
+          overwrite: true,
+        });
+      }
+
       updateBookmarks({ total: data?.bookmarkCharacter.total });
     },
   });
@@ -217,6 +244,34 @@ export const AppProvider = ({ children }: AppProviderProps) => {
           },
           overwrite: true,
         });
+
+        const bookmarksResults = cache.readQuery<BookmarksQuery>({
+          query: BookmarksDocument,
+          variables: {
+            page: settings.bookmarks.page,
+          },
+        });
+
+        if (bookmarksResults?.bookmarks && data?.unbookmarkCharacter) {
+          cache.writeQuery({
+            query: BookmarksDocument,
+            data: {
+              bookmarks: {
+                total: data?.unbookmarkCharacter.total,
+                results: bookmarksResults.bookmarks.results.filter(
+                  (bookmark) =>
+                    bookmark.id !==
+                    data.unbookmarkCharacter.unbookmarkedCharacter.id,
+                ),
+              },
+            },
+            variables: {
+              page: settings.bookmarks.page,
+            },
+            overwrite: true,
+          });
+        }
+
         updateBookmarks({ total: data.unbookmarkCharacter.total });
       }
     },
@@ -262,7 +317,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const reset = () => {
     refetchCharacters();
     setSettings({
-      isDarkMode: false,
+      isDarkMode: true,
       displayMode: 'characters',
       bookmarks: {
         page: 1,

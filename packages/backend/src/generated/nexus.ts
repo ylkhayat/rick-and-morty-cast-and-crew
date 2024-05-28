@@ -155,7 +155,7 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     bookmarks: NexusGenRootTypes['BookmarkResults']; // BookmarkResults!
     characters: NexusGenRootTypes['CharacterResults']; // CharacterResults!
-    me: NexusGenRootTypes['User']; // User!
+    me: NexusGenRootTypes['User'] | null; // User
   }
   UnbookmarkCharacterResult: { // field return type
     total: number; // Int!

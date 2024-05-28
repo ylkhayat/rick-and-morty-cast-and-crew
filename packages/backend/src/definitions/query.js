@@ -42,12 +42,10 @@ const Query = objectType({
       },
     });
 
-    t.nonNull.field('me', {
+    t.field('me', {
       type: 'User',
       resolve: (_, __, context) => {
-        if (!context.user) {
-          return null;
-        }
+        return context.user;
       },
     });
 
@@ -57,6 +55,9 @@ const Query = objectType({
         page: intArg({ default: 1 }),
       },
       resolve: async (_, { page }, context) => {
+        if (!context.user) {
+          throw new Error('You must be authenticated to view bookmarks');
+        }
         const perPage = 20;
         const minId = (page - 1) * perPage + 1;
         const maxId = page * perPage;
