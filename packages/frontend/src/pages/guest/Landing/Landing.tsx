@@ -19,6 +19,7 @@ export const Landing = () => {
           message.error('You are not authenticated.');
         }
         window.sessionStorage.removeItem('sessionId');
+        window.sessionStorage.removeItem('username');
         navigate('up', 'authentication');
       }
     }, 1000);

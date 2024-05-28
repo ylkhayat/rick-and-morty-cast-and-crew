@@ -21,7 +21,7 @@ export const Header = () => {
 
   const { message } = AntdApp.useApp();
 
-  const sessionId = window.sessionStorage.getItem('sessionId');
+  const username = window.sessionStorage.getItem('username');
   const {
     token: { colorBgBase, red5 },
   } = theme.useToken();
@@ -34,6 +34,7 @@ export const Header = () => {
     client.clearStore();
     reset();
     window.sessionStorage.removeItem('sessionId');
+    window.sessionStorage.removeItem('username');
     message.success('Ciao! 👋');
     navigate('left', 'authentication');
   };
@@ -72,7 +73,7 @@ export const Header = () => {
               </div>
 
               <div className="app-header-switch">
-                <p>{sessionId}! Logging out?</p>
+                <p>{username}! Logging out?</p>
                 <Button
                   onClick={onLogout}
                   icon={<LogoutOutlined />}

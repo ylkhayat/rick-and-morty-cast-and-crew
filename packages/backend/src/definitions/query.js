@@ -45,15 +45,9 @@ const Query = objectType({
     t.nonNull.field('me', {
       type: 'User',
       resolve: (_, __, context) => {
-        // If the user is not authenticated, return null
         if (!context.user) {
           return null;
         }
-
-        // If the user is authenticated, return the user
-        return context.prisma.user.findUnique({
-          where: { id: context.user.id },
-        });
       },
     });
 

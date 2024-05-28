@@ -29,8 +29,8 @@ declare global {
 
 export interface NexusGenInputs {
   UserInput: { // input type
-    id?: number | null; // Int
-    username?: string | null; // String
+    password: string; // String!
+    username: string; // String!
   }
 }
 

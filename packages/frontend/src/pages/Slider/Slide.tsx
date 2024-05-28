@@ -56,7 +56,6 @@ export const Slide = ({ children, slideKey, ...props }: SlideProps) => {
     <div {...props} className="container">
       <AnimatePresence initial={false} mode="sync" custom={state.direction}>
         <motion.div
-          key={slideKey}
           className="slide"
           variants={variants}
           custom={state.direction}

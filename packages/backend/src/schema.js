@@ -25,8 +25,8 @@ const DateTime = asNexusMethod(DateTimeResolver, 'date');
 const UserInput = inputObjectType({
   name: 'UserInput',
   definition(t) {
-    t.int('id');
-    t.string('username');
+    t.nonNull.string('username');
+    t.nonNull.string('password');
   },
 });
 

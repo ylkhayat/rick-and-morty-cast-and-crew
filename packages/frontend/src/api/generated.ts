@@ -126,8 +126,8 @@ export type User = {
 };
 
 export type UserInput = {
-  id?: InputMaybe<Scalars['Int']['input']>;
-  username?: InputMaybe<Scalars['String']['input']>;
+  password: Scalars['String']['input'];
+  username: Scalars['String']['input'];
 };
 
 export type BookmarkFragment = { __typename?: 'Bookmark', id: number, character: { __typename?: 'Character', id: number, name: string } };

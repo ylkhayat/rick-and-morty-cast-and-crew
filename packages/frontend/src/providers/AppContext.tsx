@@ -91,8 +91,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   });
 
   const [loginOrSignupMutation, { loading }] = useLoginOrSignupMutation({
-    onCompleted: ({ loginOrSignup: { sessionId } }) => {
+    onCompleted: ({ loginOrSignup: { sessionId, user } }) => {
       window.sessionStorage.setItem('sessionId', sessionId);
+      window.sessionStorage.setItem('username', user.username);
       navigate('right', 'list');
     },
   });

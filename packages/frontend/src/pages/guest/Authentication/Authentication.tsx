@@ -9,14 +9,16 @@ import { useAppContext } from '../../../providers/AppContext';
 
 type OnFinishParams = {
   username: string;
+  password: string;
 };
 
 export const Authentication = () => {
   const [isFocused, setIsFocused] = useState(false);
   const { loginOrSignup, loadingLoginOrSignup } = useAppContext();
-  const onFinish = async ({ username }: OnFinishParams) => {
+  const onFinish = async ({ username, password }: OnFinishParams) => {
     loginOrSignup({
-      username: username,
+      username,
+      password,
     });
   };
 
@@ -47,6 +49,30 @@ export const Authentication = () => {
             }}
           />
         </Form.Item>
+        <Form.Item
+          name="password"
+          rules={[
+            {
+              required: true,
+            },
+            {
+              min: 5,
+              message: 'must be at least 5 characters long!',
+            },
+          ]}
+          required
+        >
+          <Input.Password
+            addonBefore="Password"
+            placeholder="Enter your password"
+            onFocus={() => {
+              setIsFocused(true);
+            }}
+            onBlur={() => {
+              setIsFocused(false);
+            }}
+          />
+        </Form.Item>
 
         <Button
           htmlType="submit"
@@ -60,7 +86,6 @@ export const Authentication = () => {
       <AnimatePresence mode="wait">
         {isFocused ? (
           <motion.img
-            key="focused"
             src="/assets/authentication-focused.png"
             className="authentication-image-focused"
             initial={{ opacity: 0 }}
@@ -69,7 +94,6 @@ export const Authentication = () => {
           />
         ) : (
           <motion.img
-            key="unfocused"
             src="/assets/authentication-unfocused.png"
             className="authentication-image-unfocused"
             initial={{ opacity: 0 }}

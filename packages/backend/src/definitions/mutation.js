@@ -1,4 +1,6 @@
 const { objectType, nonNull, arg, intArg } = require('nexus');
+const { comparePassword, hashPassword } = require('../encryption');
+const jwt = require('jsonwebtoken');
 
 const Mutation = objectType({
   name: 'Mutation',
@@ -13,17 +15,36 @@ const Mutation = objectType({
         ),
       },
       resolve: async (_, args, context) => {
-        const user = await context.prisma.user.upsert({
+        const existingUser = await context.prisma.user.findUnique({
           where: { username: args.data.username },
-          update: {},
-          create: { username: args.data.username },
         });
 
-        const sessionId = args.data.username;
+        let user;
+        if (existingUser) {
+          const passwordValid = await comparePassword(
+            args.data.password,
+            existingUser.password,
+          );
+          if (!passwordValid) {
+            throw new Error('Invalid password');
+          }
+          user = existingUser;
+        } else {
+          const hashedPassword = await hashPassword(args.data.password);
+          user = await context.prisma.user.create({
+            data: {
+              username: args.data.username,
+              password: hashedPassword,
+            },
+          });
+        }
 
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+          expiresIn: '1h',
+        });
         return {
           user: user,
-          sessionId: sessionId,
+          sessionId: token,
         };
       },
     });

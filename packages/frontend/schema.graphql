@@ -78,6 +78,6 @@ type User {
 }
 
 input UserInput {
-  id: Int
-  username: String
+  password: String!
+  username: String!
 }
