@@ -96,6 +96,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       window.sessionStorage.setItem('username', user.username);
       navigate('right', 'list');
     },
+    onError: () => {
+      message.error('Invalid credentials. Please try again.');
+    },
   });
 
   const toggleDarkMode = () => {

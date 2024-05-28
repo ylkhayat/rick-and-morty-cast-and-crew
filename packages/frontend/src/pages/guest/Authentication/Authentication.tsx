@@ -55,10 +55,6 @@ export const Authentication = () => {
             {
               required: true,
             },
-            {
-              min: 5,
-              message: 'must be at least 5 characters long!',
-            },
           ]}
           required
         >
