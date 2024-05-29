@@ -6,6 +6,10 @@ This project is a full-stack application designed to showcase my ability to inte
 
 The application is a character viewer, allowing users to browse, bookmark, and view detailed information about different characters. It uses a GraphQL API to fetch data, and implements user authentication and session management.
 
+## Inspiration
+
+This project was inspired by one of the coding interviews I had. I found the task interesting and thought it would be a great idea to share it with the community. If you're curious about the entity that proposed such a task, feel free to ping me. I believe in the power of shared knowledge and I'm happy to contribute to the collective learning of the open source community.
+
 ## How to run the project
 
 I took the extra step of shipping a dockerized application and a docker-compose file to run the application. To run the application, you need to have docker and docker-compose installed on your machine.
