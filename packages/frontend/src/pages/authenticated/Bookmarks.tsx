@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Character } from '../../components/Character/Character';
 import {
   Character as CharacterType,
@@ -14,26 +14,17 @@ export const Bookmarks = () => {
       bookmarks: { page, total },
     },
   } = useAppContext();
-  const [loading, setLoading] = useState(true);
-  const { data: bookmarksData, fetchMore } = useBookmarksQuery({
+
+  const {
+    data: bookmarksData,
+    fetchMore,
+    loading,
+  } = useBookmarksQuery({
     fetchPolicy: 'cache-only',
     variables: {
       page,
     },
-    onCompleted: () => {
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-    },
   });
-
-  useEffect(() => {
-    fetchMore({
-      variables: {
-        page,
-      },
-    });
-  }, [page, fetchMore]);
 
   const results = bookmarksData?.bookmarks?.results || [];
   /**
@@ -41,8 +32,15 @@ export const Bookmarks = () => {
    * and we are not on the first page, go back one page
    */
   useEffect(() => {
-    if (results.length === 0 && page > 1 && total >= 20) {
-      updateBookmarks({ page: page - 1 });
+    let newPage =
+      results.length === 0 && page > 1 && total >= 20 ? page - 1 : page;
+    if (newPage !== page) {
+      updateBookmarks({ page: newPage });
+      fetchMore({
+        variables: {
+          page: newPage,
+        },
+      });
     }
   }, [page, updateBookmarks, results]);
 
