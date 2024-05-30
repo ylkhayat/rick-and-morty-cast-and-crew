@@ -22,6 +22,12 @@ Install the applications first by running the following command from the root fo
 yarn install
 ```
 
+Do not forget to create the `.env` following the `.env.example` file in the backend folder `packages/backend` and add the corresponding environment variables:
+
+```bash
+JWT_SECRET=<hakuna_matata>
+```
+
 Afterwards, simply run the following command to start the application:
 
 ```bash
@@ -31,7 +37,7 @@ docker-compose up
 and the application will be available at `http://localhost:3000` but we need the migrations to be shipped. Thus, proceed with the following command to run the migrations only when the database is completely up and running:
 
 ```bash
-cd backend && yarn db:migrate
+yarn db:migrate
 ```
 
 ## Ethics
